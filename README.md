@@ -1,4 +1,4 @@
-# Slide Finder related activities #
+# Slide Finder #
 
 ## German description
 
