@@ -4,16 +4,16 @@
 
 **English version please see below**
 
-Das Plugin wurde entwickelt, um ein Suchfeld für die textbasierte Suche nach Begriffen in den Lehrmaterialien bereitzustellen. 
+Das Plugin wurde entwickelt, um ein Suchfeld für die Textsuche nach Begriffen in Moodle-Büchern mit bildbasierten Folien bereitzustellen. Es erfordert, dass zu jedem Buch ein durchsuchbares PDF (fast) gleichen Namens bereit gestellt wird, dessen Seiten 1:1 zu den Seiten im Buch passen. Das PDF muss im selben Abschnitt wie das Buch liegen. Die Namen von Buch und PDF müssen identisch sein, ausgenommen ist in Klammern spezifizierter Text innerhalb der Namen. 
 
-Es kann an vielen Stellen in einem Kurs alternative Lehrmaterialien geben (siehe Beschreibung, Plugin: [Autocomplete Related Activities](https://github.com/SE-Stuttgart/kib3_moodleplugin_autocompleteactivities/blob/master/README.md)). Dazu gehören Links zu externen Videos ebenso wie bildbasierte Moodle-Bücher, die beide keine textbasierte Suche erlauben. Als Alternative gibt es jedoch immer ein PDF mit identischem Inhalt (PDF, Video und Buch werden aus derselben Quelle generiert). Das Plugin macht sich die Tatsache zunutze, dass die PDFs eine textbasierte Suche erlauben, und ermöglicht so eine textbasierte Suche nach Begriffen. Es bietet dann die Möglichkeit, direkt auf die Seite mit dem Treffer im Moodle-Buch zu springen.
+Das Plugin sucht im PDF nach den Begriffen und zeigt dann zu jedem Treffer die Seite mit der entsprechenden Seitennummer im Buch an. 
 
 ## English description
 
-The plugin is developed to provide a search field for text-based search for terms in the teaching materials. 
-
-There can be alternative teaching materials in many places in a course (see above, Plugin: [Autocomplete Related Activities](https://github.com/SE-Stuttgart/kib3_moodleplugin_autocompleteactivities/blob/master/README.md)). These include links to external videos as well as image-based Moodle books, neither of which allow text-based searching. However, there is always a PDF as an alternative with identical content (PDF, video and book are generated from the same source). The plugin takes advantage of the fact that the PDFs allow text-based searching, and thus allows text-based searching for terms. It then provides the ability to jump directly to the page with the hit in the Moodle book.
-
+The plugin was developed to provide a search field for text search in Moodle books with image-based slides. The plugin requires that a PDF of (almost) the same name is present in the same course section. The pages of the PDF need to correspond 1-1 to the pages in the book. Names of book and PDF need to be identical, except for text specified in brackets inside their names. 
+ 
+ The plugin searches the PDF for text and then for each hit shows the page with the corresponding number inside the book. 
+ 
 
 # Usage and API configuration
 
