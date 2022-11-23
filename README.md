@@ -77,6 +77,9 @@ Alternatively, you can run
 
 to complete the installation from the command line.
 
+## Dependencies ##
+Slide finder relies on [pdfparser](https://github.com/smalot/pdfparser) plug-in to extract data from PDF files. Pdfparser is a standalone PHP package under LGPLv3 license (see [thirdpartylibs.xml](https://github.com/SE-Stuttgart/kib3_moodleplugin_slidefinder/blob/main/thirdpartylibs.xml) for more details). 
+
 ## License ##
 
 2022 Universtity of Stuttgart kasra.habib@iste.uni-stuttgart.de
