@@ -6,13 +6,13 @@
 
 Das Plugin wurde entwickelt, um ein Suchfeld für die Textsuche nach Begriffen in Moodle-Büchern mit bildbasierten Folien bereitzustellen. Es erfordert, dass zu jedem Buch ein durchsuchbares PDF (fast) gleichen Namens bereit gestellt wird, dessen Seiten 1:1 zu den Seiten im Buch passen. Das PDF muss im selben Abschnitt wie das Buch liegen. Die Namen von Buch und PDF müssen identisch sein, ausgenommen ist in Klammern spezifizierter Text innerhalb der Namen. 
 
-Das Plugin sucht im PDF nach den Begriffen und zeigt dann zu jedem Treffer die Seite mit der entsprechenden Seitennummer im Buch an. 
+Das Plugin sucht in allen PDFs nach den Begriffen und zeigt die Resultate als eine Liste von Links an. Durch Klicken auf den gewünschten Link wird die Seite mit der entsprechenden Seitennummer im Buch angezeigt. 
 
 ## English description
 
 The plugin was developed to provide a search field for text search in Moodle books with image-based slides. The plugin requires that a PDF of (almost) the same name is present in the same course section. The pages of the PDF need to correspond 1-1 to the pages in the book. Names of book and PDF need to be identical, except for text specified in brackets inside their names. 
  
- The plugin searches the PDF for text and then for each hit shows the page with the corresponding number inside the book. 
+ The plugin searches all PDFs for the text and then displays the search results as a list of links. Clicking on a link shows the respective page with the corresponding number inside the book. 
  
 
 # Usage and API configuration
