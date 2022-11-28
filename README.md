@@ -8,6 +8,8 @@ Das Plugin wurde entwickelt, um ein Suchfeld für die Textsuche nach Begriffen i
 
 Das Plugin sucht in allen PDFs nach den Begriffen und zeigt die Resultate als eine Liste von Links an. Durch Klicken auf den gewünschten Link wird die Seite mit der entsprechenden Seitennummer im Buch angezeigt. 
 
+Die Suchfunktion steht zur Verfügung, wenn man einen entsprechenden Block konfiguriert (s.u.). Alternativ kann sie über einen Webservice erreicht werden. Die Konfiguration des Web Service ist ebenfalls unten beschrieben. 
+
 ## English description
 
 The plugin was developed to provide a search field for text search in Moodle books with image-based slides. The plugin requires that a PDF of (almost) the same name is present in the same course section. The pages of the PDF need to correspond 1-1 to the pages in the book. Names of book and PDF need to be identical, except for text specified in brackets inside their names. 
@@ -21,7 +23,7 @@ The plugin was developed to provide a search field for text search in Moodle boo
 Add a block to either your dashboard or a course.
 
 ### Course Selection
-If you are on your dashboard you will have to first select the course you want to search in (this will trigger a site reload) using a dropdown menu.
+If you are on your dashboard, you will have to first select the course you want to search in (this will trigger a site reload) using a dropdown menu.
 
 ### Search
 You can use the input field to search for a text snippet you want to see results for. The results will get updated automatically.
@@ -30,13 +32,13 @@ You can use the input field to search for a text snippet you want to see results
 The results will be displayed in the block just below the search bar and will update automatically.
 They are ordered under PDF/Book source and link to the respective book chapter.
 
-## Webservice
+## Web Service
 
-Follow the instructions on _Site Administration > Server > Web services > Overview_ to register the web service and set the right for a specified user to use it.
+To configure the web service, follow the instructions on _Site Administration > Server > Web services > Overview_ to register the web service and set the right for a specified user to use it.
 This involves the following steps:
 1. Enable web services
 2. Enable protocols: Her, enable the REST protocol if not already enabled.
-3. Create a specified user: This can be an user representing the chatbot.
+3. Create a specified user
 4. Check user capability: The specified user has to have at least the __webservice/rest:use__ capability.
 5. Select a service: Add the "Lecture Reference Finder" to custom services.
 6. Add functions: Add the "block_lecture_reference_finder_get_searched_locations" function to the "Lecture Reference Finder" service.
