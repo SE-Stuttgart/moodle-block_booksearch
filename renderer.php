@@ -17,13 +17,13 @@
 /**
  * Renderer
  *
- * @package    block_lecture_reference_finder
+ * @package    block_slidefinder
  * @copyright  University of Stuttgart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
 
-class block_lecture_reference_finder_renderer extends plugin_renderer_base
+class block_slidefinder_renderer extends plugin_renderer_base
 {
 }

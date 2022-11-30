@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_lecture_reference_finder/lrf_search
+    @template block_slidefinder/lrf_search
 
     Complex Lecture Search
 
@@ -26,13 +26,13 @@
         "cid": 0,
         "lrf_cid": 0,
         "course_selector_param_name": "lrf_cid",
-        
+
         "search_term_param_name" : "search",
         "search_term_placeholder": "Search",
-        
+
         "search_term_label": "Search Term:",
         "search_term": "?",
-        
+
         "chapter_label": "chapter",
 
         "content": ?,
@@ -42,7 +42,7 @@
     {{^inform}}
     <form autocomplete="off" action="{{ action }}" method="get" accept-charset="utf-8" class="mform form-inline simplesearchform">
     {{/inform}}
-    
+
     {{#cid}}<input type="hidden" name="id" value="{{cid}}"></input>{{/cid}}
     {{#lrf_cid}}<input type="hidden" name="{{course_selector_param_name}}" value="{{lrf_cid}}"></input>{{/lrf_cid}}
 
@@ -117,7 +117,7 @@
 
         /**
         * searches one pdf-page/book-chapter using the lrf_search_term and if found ads it with context to lrf_searched_content
-        * @param {*} page 
+        * @param {*} page
         */
         function lrfSearchContent(page) {
             var _content = ' ' + page.content.toLowerCase() + ' ';

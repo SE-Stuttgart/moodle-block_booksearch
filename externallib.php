@@ -17,7 +17,7 @@
 /**
  * Function for the WebService
  *
- * @package    block_lecture_reference_finder
+ * @package    block_slidefinder
  * @copyright  University of Stuttgart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/externallib.php");
 
-class block_lecture_reference_finder_external extends external_api
+class block_slidefinder_external extends external_api
 {
     /**
      * Returns description of method parameter
@@ -55,11 +55,11 @@ class block_lecture_reference_finder_external extends external_api
 
     /**
      * Get all occurences, their context and a link to the chapter of $search_string in the eligable $PDF-Book lectures in the given course.
-     * 
+     *
      * @param string $search_string the string to search for
      * @param int $course_id id of the course to search in
      * @param int $context_length the size of the context snippet on each side of the found @param $seach_string occurences in words
-     * 
+     *
      * @return string json encoded array of arrays holding the 'filename', 'page_number', 'book_chapter_url' and 'context' of each chapter/pdf-page the $search_term was found
      * @return string return '' the $course_id was incorrect
      */
@@ -123,11 +123,11 @@ class block_lecture_reference_finder_external extends external_api
 
     /**
      * Searches for the $search_term in the given $page->content and returns the page with a $page->context context snippet if it was found. returns null if not.
-     * 
+     *
      * @param stdClass $page object that holds the $page->content and gets returned containing the $page->context
      * @param string $search_term the string to seach for in the $page->content
      * @param int $context_length word count returned as context snippet on each side of the found $search_term
-     * 
+     *
      * @return stdClass|null the given @param $page object with the additional $page->context or null if nothing was found
      */
     private static function lrf_search_content($page, $search_term, $context_length)
@@ -177,11 +177,11 @@ class block_lecture_reference_finder_external extends external_api
 
     /**
      * Alternate function to PHPs substr() to put it more in line with the javascript equivalent. Returns the substring of a given string with start and end index given.
-     * 
+     *
      * @param string $string source string to  extract from
      * @param int $start the starting index for the extraction
      * @param int $end the ending index for the extraction
-     * 
+     *
      * @return string the extracted substring
      */
     private static function substring($string, $start, $end)
@@ -198,11 +198,11 @@ class block_lecture_reference_finder_external extends external_api
 
     /**
      * Alternate function to PHPs stripos() to put it more in line with the javascript equivalent. Left to right search returning the index of the first occurence of the needle in the given haystack starting at index offset.
-     * 
+     *
      * @param string $haystack string to search in
      * @param string $needle string to search for
      * @param int $offset starting index of right-wards search
-     * 
+     *
      * @return int index of the first occurence found or -1 if nothing was found
      */
     private static function indexOf($haystack, $needle, $offset)
@@ -217,11 +217,11 @@ class block_lecture_reference_finder_external extends external_api
 
     /**
      * Alternate function to PHPs strripos() to put it more in line with the javascript equivalent. Right to left search returning the index of the first occurence of the needle in the given haystack starting at index offset.
-     * 
+     *
      * @param string $haystack string to search in
      * @param string $needle string to search for
      * @param int $offset starting index of left-wards search
-     * 
+     *
      * @return int index of the first occurence found or -1 if nothing was found
      */
     private static function lastIndexOf($haystack, $needle, $offset)

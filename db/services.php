@@ -17,7 +17,7 @@
 /**
  * Describes WebServices
  *
- * @package    block_lecture_reference_finder
+ * @package    block_slidefinder
  * @copyright  University of Stuttgart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,19 +25,19 @@ defined('MOODLE_INTERNAL') || die();
 
 $functions = array(
     // local_PLUGINNAME_FUNCTIONNAME is the name of the web service function that the client will call.
-    'block_lecture_reference_finder_get_searched_locations' => array(
+    'block_slidefinder_get_searched_locations' => array(
 
         //class containing the external function
-        'classname'     => 'block_lecture_reference_finder_external',
+        'classname'     => 'block_slidefinder_external',
 
         //external function name
         'methodname'    => 'get_searched_locations',
 
         //file containing the class/external function - not required if using namespaced auto-loading classes.
         // defaults to the service's externalib.php
-        'classpath'   => 'block/lecture_reference_finder/externallib.php',
+        'classpath'   => 'blocks/slidefinder/externallib.php',
 
-        // This documentation will be displayed in the generated API documentation 
+        // This documentation will be displayed in the generated API documentation
         // (Administration > Plugins > Webservices > API documentation)
         'description'   => 'This is a web service for the chatbot from the University of Stuttgart.',
 

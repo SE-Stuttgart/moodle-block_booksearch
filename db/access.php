@@ -17,7 +17,7 @@
 /**
  * Capability definitions for this module.
  *
- * @package    block_lecture_reference_finder
+ * @package    block_slidefinder
  * @copyright  University of Stuttgart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
 
-    'block/lecture_reference_finder:myaddinstance' => array(
+    'block/slidefinder:myaddinstance' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
         'archetypes' => array(
@@ -34,7 +34,7 @@ $capabilities = array(
         'clonepermissionsfrom' => 'moodle/my:manageblocks'
     ),
 
-    'block/lecture_reference_finder:addinstance' => array(
+    'block/slidefinder:addinstance' => array(
         //'riskbitmask' => RISK_PERSONAL,
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,

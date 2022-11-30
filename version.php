@@ -17,15 +17,15 @@
 /**
  * Version Details
  *
- * @package    block_lecture_reference_finder
+ * @package    block_slidefinder
  * @copyright  University of Stuttgart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
 
-$plugin->version   = 2022111500;  // The current plugin version (Date: YYYYMMDDXX).
+$plugin->version   = 2022113000;  // The current plugin version (Date: YYYYMMDDXX).
 $plugin->requires  = 2020061510;  // Requires this Moodle version.
-$plugin->component = 'block_lecture_reference_finder';  // Full name of the plugin (used for diagnostics)
+$plugin->component = 'block_slidefinder';  // Full name of the plugin (used for diagnostics)
 $plugin->release = '0.1.3';
 $plugin->maturity = MATURITY_BETA;

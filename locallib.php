@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Helper functions for the block_lecture_reference_finder Plugin
+ * Helper functions for the block_slidefinder Plugin
  *
- * @package    block_lecture_reference_finder
+ * @package    block_slidefinder
  * @copyright  University of Stuttgart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -27,9 +27,9 @@ require_once(__DIR__ . '/pdfparser/alt_autoload.php-dist');
 
 /**
  * Return a list of all eligable book-pdf matches in a given course.
- * 
+ *
  * @param mixed $course course to search in
- * 
+ *
  * @return array list of matches as objects containing pdf file information and book_id
  */
 function block_lrf_get_all_book_pdf_matches_from_course($course)
@@ -56,7 +56,7 @@ function block_lrf_get_all_book_pdf_matches_from_course($course)
         $r->pathnamehash = $file->get_pathnamehash();
         $r->filename = $file->get_filename();
         $r->section = $resource->section;
-        $r->resourcename = preg_replace('/\s*\[[^]]*\](?![^[]*\[)/', '', preg_replace('/\s*\([^)]*\)(?![^(]*\()/', '', $resource->name));
+        $r->resourcename = trim(preg_replace('/\s*\[[^]]*\](?![^[]*\[)/', '', preg_replace('/\s*\([^)]*\)(?![^(]*\()/', '', $resource->name)));
         $pdfs[] = $r;
     }
 
@@ -64,7 +64,7 @@ function block_lrf_get_all_book_pdf_matches_from_course($course)
     $sectioned_books = array();
     $books = get_all_instances_in_course('book', $course);
     foreach ($books as $book) {
-        $sectioned_books[$book->section][$book->id] = preg_replace('/\s*\[[^]]*\](?![^[]*\[)/', '', preg_replace('/\s*\([^)]*\)(?![^(]*\()/', '', $book->name));
+        $sectioned_books[$book->section][$book->id] = trim(preg_replace('/\s*\[[^]]*\](?![^[]*\[)/', '', preg_replace('/\s*\([^)]*\)(?![^(]*\()/', '', $book->name)));
     }
 
     // Get all book-PDF matches
@@ -80,9 +80,9 @@ function block_lrf_get_all_book_pdf_matches_from_course($course)
 
 /**
  * Return an array of objects each containing the content and some metadata of one PDF page of a given pdf-book match.
- * 
+ *
  * @param mixed $match an object containing metadata of one pdf-book match.
- * 
+ *
  * @return array list of objects containing the content and some metadata of one PDF page.
  */
 function block_lrf_get_content_as_chapters($match)
@@ -117,10 +117,10 @@ function block_lrf_get_content_as_chapters($match)
 
 /**
  * Create and return an url linking to a specific book chapter.
- * 
+ *
  * @param int $book_id id of the book
  * @param int $pagenum chapter number / pdf page num
- * 
+ *
  * @return string url linking to the book chapter
  */
 function block_lrf_get_book_chapter_url($book_id, $pagenum)
@@ -181,7 +181,7 @@ function block_lrf_select_course_options(int $selected_course_id, int $user_id)
         $courses_html[0] = (object)['id' => $selected_course_id, 'value' => $courses_shown[$selected_course_id]];
         unset($courses_shown[$selected_course_id]);
     } else {
-        $courses_html[0] = (object)['id' => 0, 'value' => get_string('select_course', 'block_lecture_reference_finder')];
+        $courses_html[0] = (object)['id' => 0, 'value' => get_string('select_course', 'block_slidefinder')];
     }
 
     foreach ($courses_shown as $key => $value) {

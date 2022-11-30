@@ -17,7 +17,7 @@
 /**
  * Language settings german.
  *
- * @package    block_lecture_reference_finder
+ * @package    block_slidefinder
  * @copyright  University of Stuttgart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,7 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 
 // Config
-$string['pluginname'] = 'Lecture Reference Finder';
+$string['pluginname'] = 'Foliensuche';
 
 // Block
 $string['search_term'] = 'Gesucht: ';

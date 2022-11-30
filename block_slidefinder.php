@@ -17,7 +17,7 @@
 /**
  * Block core and UI
  *
- * @package    block_lecture_reference_finder
+ * @package    block_slidefinder
  * @copyright  University of Stuttgart
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,7 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/locallib.php');
 
-class block_lecture_reference_finder extends block_base
+class block_slidefinder extends block_base
 {
     /**
      * Set the initial properties for the block
@@ -78,14 +78,14 @@ class block_lecture_reference_finder extends block_base
 
 
         if ($view_course_selection) {
-            $text .= $renderer->render_from_template('block_lecture_reference_finder/lrf_drop_down', [
+            $text .= $renderer->render_from_template('block_slidefinder/lrf_drop_down', [
                 'action' => $PAGE->url,
                 'course_selector_param_name' => 'lrf_cid',
                 'course_selector_options' => block_lrf_select_course_options($course_id, $USER->id),
             ]);
         }
         if ($view_selected_course) {
-            $text .= $renderer->render_from_template('block_lecture_reference_finder/lrf_search', [
+            $text .= $renderer->render_from_template('block_slidefinder/lrf_search', [
                 'action' => $PAGE->url,
                 'cid' => $cid,
                 'lrf_cid' => $lrf_cid,
@@ -107,9 +107,9 @@ class block_lecture_reference_finder extends block_base
 
     /**
      * Returns the PDFs and their content (splitted in pages) for all eligable PDFs in the given course.
-     * 
+     *
      * @param mixed $course course to search in.
-     * 
+     *
      * @return array array of objects each holding one pdf page on content and some metadata
      */
     function get_pdfs_content_from_course($course): array
