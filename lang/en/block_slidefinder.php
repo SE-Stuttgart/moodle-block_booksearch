@@ -17,10 +17,11 @@
 /**
  * Language settings english.
  *
- * @package    block_lecture_reference_finder
- * @copyright  University of Stuttgart
+ * @package    block_slidefinder
+ * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
 
 
@@ -34,3 +35,8 @@ $string['chapter'] = 'Chapter';
 //Search Field
 $string['search'] = 'Search Keyword...';
 $string['select_course'] = 'Select Course...';
+
+
+
+$string['block_slidefinder:myaddinstance'] = 'Add a new Slide Finder block to my Moodle dashboard.';
+$string['block_slidefinder:addinstance'] = 'Add a new Slide Finder block to this page.';

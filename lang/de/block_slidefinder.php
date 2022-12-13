@@ -18,7 +18,7 @@
  * Language settings german.
  *
  * @package    block_slidefinder
- * @copyright  University of Stuttgart
+ * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -27,6 +27,7 @@ defined('MOODLE_INTERNAL') || die();
 // Config
 $string['pluginname'] = 'Foliensuche';
 
+
 // Block
 $string['search_term'] = 'Gesucht: ';
 $string['chapter'] = 'Kapitel';
@@ -34,3 +35,7 @@ $string['chapter'] = 'Kapitel';
 //Search Field
 $string['search'] = 'Suche...';
 $string['select_course'] = 'Wähle Kurs...';
+
+
+$string['block_slidefinder:myaddinstance'] = 'Füge einen neuen Foliensuche Block zu meinem Moodle Dashboard hinzu';
+$string['block_slidefinder:addinstance'] = 'Füge einen neuen Foliensuche Block zu dieser Seite hinzu';
