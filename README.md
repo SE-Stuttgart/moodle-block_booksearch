@@ -1,7 +1,7 @@
 # Slide Finder #
 
 
-## English description
+## English Description
 
 **German version please see below**
 
@@ -10,7 +10,7 @@ The plugin was developed to provide a search field for text search in Moodle boo
  The plugin searches all PDFs for the text and then displays the search results as a list of links. Clicking on a link shows the respective page with the corresponding number inside the book.
  
  
- ## German description
+ ## German Description
 
 Das Plugin wurde entwickelt, um ein Suchfeld für die Textsuche nach Begriffen in Moodle-Büchern mit bildbasierten Folien bereitzustellen. Es erfordert, dass zu jedem Buch ein durchsuchbares PDF (fast) gleichen Namens bereit gestellt wird, dessen Seiten 1:1 zu den Seiten im Buch passen. Das PDF muss im selben Abschnitt wie das Buch liegen. Die Namen von Buch und PDF müssen identisch sein, ausgenommen ist in Klammern spezifizierter Text innerhalb der Namen.
 
@@ -21,7 +21,7 @@ Die Suchfunktion steht zur Verfügung, wenn man einen entsprechenden Block konfi
 
 
 
-# Usage and API configuration
+# Usage and API Configuration
 
 ### Type: Block
 Add a block to either your dashboard or a course.
@@ -60,7 +60,7 @@ where
 
 
 
-## Installing via uploaded ZIP file ##
+## Installing via Uploaded ZIP File ##
 
 1. Log in to your Moodle site as an admin and go to _Site administration >
    Plugins > Install plugins_.
@@ -68,7 +68,7 @@ where
    extra details if your plugin type is not automatically detected.
 3. Check the plugin validation report and finish the installation.
 
-## Installing manually ##
+## Installing Manually ##
 
 The plugin can be also installed by putting the contents of this directory to
 
