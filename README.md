@@ -7,24 +7,29 @@
 
 The plugin was developed to provide a search field for text search in Moodle books with image-based slides. The plugin requires that a PDF of (almost) the same name is present in the same course section. The pages of the PDF need to correspond 1-1 to the pages in the book. Names of book and PDF need to be identical, except for text specified in brackets inside their names.
 
- The plugin searches all PDFs for the text and then displays the search results as a list of links. Clicking on a link shows the respective page with the corresponding number inside the book.
- 
- 
- ## German Description
+The plugin searches all PDFs for the text and then displays the search results as a list of links. Clicking on a link shows the respective page with the corresponding number inside the book.
 
-Das Plugin wurde entwickelt, um ein Suchfeld für die Textsuche nach Begriffen in Moodle-Büchern mit bildbasierten Folien bereitzustellen. Es erfordert, dass zu jedem Buch ein durchsuchbares PDF (fast) gleichen Namens bereit gestellt wird, dessen Seiten 1:1 zu den Seiten im Buch passen. Das PDF muss im selben Abschnitt wie das Buch liegen. Die Namen von Buch und PDF müssen identisch sein, ausgenommen ist in Klammern spezifizierter Text innerhalb der Namen.
+The search function is available if a corresponding block is configured (see below). Alternatively, the function may be reached using a web service. The configuration of the web service is also described below.
+
+More details on functionality and configuration of this plugin can be found in the [Wiki](https://github.com/SE-Stuttgart/kib3_moodleplugin_slidefinder/wiki).
+
+## German Description
+
+Das Plugin wurde entwickelt, um ein Suchfeld für die Textsuche nach Begriffen in Moodle-Büchern mit bildbasierten Folien bereitzustellen. Es erfordert, dass zu jedem Buch ein durchsuchbares PDF mit (fast) gleichen Namens bereitgestellt wird, dessen Seiten 1:1 zu den Seiten im Buch passen. Das PDF muss im selben Abschnitt wie das Buch liegen. Die Namen von Buch und PDF müssen identisch sein, ausgenommen ist in Klammern spezifizierter Text innerhalb der Namen.
 
 Das Plugin sucht in allen PDFs nach den Begriffen und zeigt die Resultate als eine Liste von Links an. Durch Klicken auf den gewünschten Link wird die Seite mit der entsprechenden Seitennummer im Buch angezeigt.
 
 Die Suchfunktion steht zur Verfügung, wenn man einen entsprechenden Block konfiguriert (s.u.). Alternativ kann sie über einen Webservice erreicht werden. Die Konfiguration des Web Service ist ebenfalls unten beschrieben.
 
-
+Mehr Informationen zu den Funktionen und zur Konfiguration des Plugins sind im [Wiki](https://github.com/SE-Stuttgart/kib3_moodleplugin_slidefinder/wiki) zu finden.
 
 
 # Usage and API Configuration
 
 ### Type: Block
 Add a block to either your dashboard or a course.
+You can add a block by turning on "edit mode" and then pressing "add a block" on the right side of the user interface.
+Then you can select "Slide Finder" to add the block.
 
 ### Course Selection
 If you are on your dashboard, you will have to first select the course you want to search in (this will trigger a site reload) using a dropdown menu.
@@ -40,13 +45,13 @@ They are ordered under PDF/Book source and link to the respective book chapter.
 
 To configure the web service, follow the instructions on _Site Administration > Server > Web services > Overview_ to register the web service and set the right for a specified user to use it.
 This involves the following steps:
-1. Enable web services
-2. Enable protocols: Her, enable the REST protocol if not already enabled.
-3. Create a specified user
-4. Check user capability: The specified user has to have at least the __webservice/rest:use__ capability.
+1. Enable web services.
+2. Enable protocols: Here, enable the REST protocol if not already enabled.
+3. Create a new specific user.
+4. Check user capability: The specified user has to have at least the __webservice/rest:use__ capability. If the user does not have the permission, you can add the permission to a role and then add the user to that role.
 5. Select a service: Add the "Slide Finder" to custom services.
 6. Add functions: Add the "block_slidefinder_get_searched_locations" function to the "Slide Finder" service.
-7. Select a specified user: Add the web services user as an authorised user.
+7. Select a specific user: Add the web services user as an authorised user.
 8. Create a token for a user: Create a token for the web services user.
 
 Test it by sending an http GET request to
@@ -58,6 +63,7 @@ where
 - course_id: the id of the course the string is searched in
 - context_length: the number of word before and after each found string
 
+You should get a response with your search results in the JSON format.
 
 
 ## Installing via Uploaded ZIP File ##
@@ -88,7 +94,7 @@ Slide Finder plug-in relies on [pdfparser](https://github.com/smalot/pdfparser) 
 
 ## License ##
 
-2022 Universtity of Stuttgart kasra.habib@iste.uni-stuttgart.de
+2022 University of Stuttgart kasra.habib@iste.uni-stuttgart.de
 
 This program is free software: you can redistribute it and/or modify it under
 the terms of the GNU General Public License as published by the Free Software
