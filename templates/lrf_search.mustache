@@ -1,0 +1,185 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+}}
+{{!
+    @template block_slidefinder/lrf_search
+
+    Complex Lecture Search
+
+    Example context (json):
+    {
+        "action": "https://moodle.local/admin/search.php",
+
+        "cid": 0,
+        "lrf_cid": 0,
+        "course_selector_param_name": "lrf_cid",
+
+        "search_term_param_name" : "search",
+        "search_term_placeholder": "Search",
+
+        "search_term_label": "Search Term:",
+        "search_term": "?",
+
+        "chapter_label": "chapter",
+
+        "content": ?,
+    }
+}}
+<div class="simplesearchform">
+    {{^inform}}
+    <form autocomplete="off" action="{{ action }}" method="get" accept-charset="utf-8" class="mform form-inline simplesearchform">
+    {{/inform}}
+
+    {{#cid}}<input type="hidden" name="id" value="{{cid}}"></input>{{/cid}}
+    {{#lrf_cid}}<input type="hidden" name="{{course_selector_param_name}}" value="{{lrf_cid}}"></input>{{/lrf_cid}}
+
+    <div class="input-group" style="margin: 5px; margin-right: 5rem">
+        <label for="searchinput-{{uniqid}}">
+            <span class="sr-only">{{{ search_term_placeholder }}}</span>
+        </label>
+        <input type="text"
+           id="searchinput-{{uniqid}}"
+           class="form-control"
+           placeholder="{{ search_term_placeholder }}"
+           aria-label="{{ search_term_placeholder }}"
+           name="{{ search_term_param_name }}"
+           data-region="input"
+           autocomplete="off"
+           oninput="lrfUpdateSearch()"
+        ></input>
+        <div class="input-group-append">
+            <button type="submit" class="btn {{^btnclass}}btn-submit{{/btnclass}} {{ btnclass }} search-icon">
+                {{#pix}} a/search, core {{/pix}}
+                <span class="sr-only">{{ search_term_param_name }}</span>
+            </button>
+        </div>
+    </div>
+
+    {{^inform}}
+    </form>
+    {{/inform}}
+
+
+    <div>
+        <hr>
+        <h3 id="lrf-search-term-{{uniqid}}"> {{search_term_label}} {{search_term}} </h3>
+        <hr>
+        <div id="lrf-content-{{uniqid}}" style="max-height: 700px; overflow: auto;">
+        </div>
+    </div>
+
+    <script type="text/javascript">
+        var lrf_origin_content_json = '{{content}}';
+        var lrf_origin_content = JSON.parse(atob(lrf_origin_content_json));
+
+        var lrf_search_term = "{{search_term}}";
+        var lrf_searched_content = [];
+
+        var context_length = 5;
+
+        lrfSearch();
+
+        /**
+        * Call to update the search
+        * Gets new lrf_search_term and initiate the new search
+        */
+        function lrfUpdateSearch() {
+            lrf_search_term = document.getElementById("searchinput-{{uniqid}}").value;
+            lrfSearch();
+        }
+
+        /**
+        * searches the lrf_origin_content using the new lrf_search_term
+        */
+        function lrfSearch() {
+            lrf_searched_content = [];
+            if (lrf_search_term) {
+                lrf_origin_content.forEach(lrfSearchContent);
+                lrfDisplayContent();
+            } else {
+                document.getElementById("lrf-search-term-{{uniqid}}").innerHTML = "{{search_term_label}}";
+                document.getElementById("lrf-content-{{uniqid}}").innerHTML = '';
+            }
+        }
+
+        /**
+        * searches one pdf-page/book-chapter using the lrf_search_term and if found ads it with context to lrf_searched_content
+        * @param {*} page
+        */
+        function lrfSearchContent(page) {
+            var _content = ' ' + page.content.toLowerCase() + ' ';
+            var _search = lrf_search_term.toLowerCase();
+
+            // Is the searched word in this page?
+            if (!(_content.includes(_search))) return;
+
+            // Create a String with all occurences & context
+            var context = '';
+
+            var index = _content.indexOf(_search);
+            var index_end = -1;
+
+            while (0 <= index) {
+                var i_start = index;
+                var i_end = index;
+                for (var i = 0; i < context_length; i++) {
+                    i_start = _content.lastIndexOf(' ', i_start - 1);
+                    i_end = _content.indexOf(' ', i_end + 1);
+                    if (i_end < i_start) {
+                        i_end = _content.length;
+                    }
+                }
+                if (i_start > index_end) {
+                    context += '...';
+                    context += page.content.substring(i_start, i_end);
+                } else {
+                    context += page.content.substring(index_end + 1, i_end);
+                }
+                index_end = i_end;
+                index = _content.indexOf(_search, index + 1);
+            }
+            context += '...';
+
+            page.context = context;
+            if (!(page.filename in lrf_searched_content)) {
+                lrf_searched_content[page.filename] = [];
+            }
+            lrf_searched_content[page.filename][page.page] = page;
+        }
+
+        /**
+        * displayes the lrf_searched_content in a list format
+        */
+        function lrfDisplayContent() {
+            document.getElementById("lrf-search-term-{{uniqid}}").innerHTML = "{{search_term_label}}" + lrf_search_term;
+
+            var display = '';
+            for (var pdf_name in lrf_searched_content) {
+                display += '<h4>' + pdf_name + '</h4>';
+                display += '<ul style="max-height: 200px; overflow: auto;">';
+                for (var chapter in lrf_searched_content[pdf_name]) {
+                    display += '<li>' +
+                        '<a href="' + lrf_searched_content[pdf_name][chapter].book_url + '">' +
+                        '{{chapter_label}}' + '-' + chapter +
+                        '</a>: ' + lrf_searched_content[pdf_name][chapter].context +
+                        '</li>';
+                }
+                display += '</ul>';
+            }
+            document.getElementById("lrf-content-{{uniqid}}").innerHTML = display;
+        }
+    </script>
+</div>
