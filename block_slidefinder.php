@@ -26,22 +26,18 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/locallib.php');
 
-class block_slidefinder extends block_base
-{
+class block_slidefinder extends block_base {
     /**
      * Set the initial properties for the block
      */
-    function init()
-    {
-        $this->blockname = get_class($this);
-        $this->title = get_string('pluginname', $this->blockname);
+    function init() {
+        $this->title = get_string('pluginname', get_class($this));
     }
 
     /**
      * Describe Block Content
      */
-    public function get_content()
-    {
+    public function get_content() {
         global $PAGE, $CFG, $DB, $USER;
 
 
@@ -67,21 +63,20 @@ class block_slidefinder extends block_base
         }
 
         // Renderer needed to use templates
-        $renderer = $PAGE->get_renderer($this->blockname);
+        $renderer = $PAGE->get_renderer(get_class($this));
 
         $view_course_selection = !$cid;
-        $view_selected_course = $course_id ? block_lrf_enrolled_in($USER->id, $course_id) : false;
+        $view_selected_course = $course_id ? can_access_course($course) : false;
 
         // Main Content (text) and Footer of the block
         $text = '';
         $footer = '';
 
-
         if ($view_course_selection) {
             $text .= $renderer->render_from_template('block_slidefinder/lrf_drop_down', [
                 'action' => $PAGE->url,
                 'course_selector_param_name' => 'lrf_cid',
-                'course_selector_options' => block_lrf_select_course_options($course_id, $USER->id),
+                'course_selector_options' => block_lrf_select_course_options($course_id),
             ]);
         }
         if ($view_selected_course) {
@@ -91,10 +86,10 @@ class block_slidefinder extends block_base
                 'lrf_cid' => $lrf_cid,
                 'course_selector_param_name' => 'lrf_cid',
                 'search_term_param_name' => 'search',
-                'search_term_placeholder' => get_string('search', $this->blockname),
-                'search_term_label' => get_string('search_term', $this->blockname),
+                'search_term_placeholder' => get_string('search', get_class($this)),
+                'search_term_label' => get_string('search_term', get_class($this)),
                 'search_term' => $search,
-                'chapter_label' => get_string('chapter', $this->blockname),
+                'chapter_label' => get_string('chapter', get_class($this)),
                 'content' => base64_encode(json_encode($this->get_pdfs_content_from_course($course)))
             ]);
         }
@@ -112,8 +107,7 @@ class block_slidefinder extends block_base
      *
      * @return array array of objects each holding one pdf page on content and some metadata
      */
-    function get_pdfs_content_from_course($course): array
-    {
+    function get_pdfs_content_from_course($course): array {
         if ($course == null) return [];
 
         $chapters = array();
