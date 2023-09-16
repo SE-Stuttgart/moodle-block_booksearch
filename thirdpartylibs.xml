@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <libraries>
     <library>
-        <location>/pdfparser/alt_autoload.php-dist</location>
+        <location>pdfparser</location>
         <name>pdfparser</name>
         <version>2.2.1</version>
         <license>LGPL</license>

@@ -26,13 +26,56 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/pdfparser/alt_autoload.php-dist');
 
 /**
+ * Return the content & link of all chapters that are part of an eliganble book-pdf match in the given course.
+ * 
+ * @param int $courseid ID of the course to be searched
+ * @param int $userid ID of the user initiating the search
+ * 
+ * @return array [0] list of chapters (content, link, other metadata). One chapter for each eligable book chaper in course.
+ * @return array [1] list of filenames of intended eligable pairs that have a problem
+ */
+function block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from_course($courseid, $userid) {
+    global $DB;
+
+    $coursechapters = array();
+    $misconfiguredcoursechapters = array();
+
+    try {
+        // Course.
+        if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+            throw new moodle_exception(get_string('error_course_not_found', 'block_slidefinder'));
+        }
+        // Does the user have access to the course?
+        if (!can_access_course($course, $userid)) {
+            throw new moodle_exception(get_string('error_course_access_denied', 'block_slidefinder'));
+        }
+    } catch (\Throwable $th) {
+        debugging($th);
+        return [$coursechapters, $misconfiguredcoursechapters];
+    }
+
+    $matches = block_slidefinder_get_all_book_pdf_matches_from_course($course);
+
+    foreach ($matches as $match) {
+        $matchchapters = block_slidefinder_get_content_as_chapters($match);
+        if (!is_null($matchchapters) && !empty($matchchapters)) {
+            $coursechapters = array_merge($coursechapters, $matchchapters);
+        } else {
+            $misconfiguredcoursechapters[] = $match->filename;
+        }
+    }
+
+    return [$coursechapters, $misconfiguredcoursechapters];
+}
+
+/**
  * Return a list of all eligable book-pdf matches in a given course.
  *
  * @param mixed $course course to search in
  *
  * @return array list of matches as objects containing pdf file information and book_id
  */
-function block_lrf_get_all_book_pdf_matches_from_course($course) {
+function block_slidefinder_get_all_book_pdf_matches_from_course($course) {
     // Get all PDFs from course
     $fs = get_file_storage();
     $pdfs = array();
@@ -84,31 +127,38 @@ function block_lrf_get_all_book_pdf_matches_from_course($course) {
  *
  * @return array list of objects containing the content and some metadata of one PDF page.
  */
-function block_lrf_get_content_as_chapters($match) {
-    $fs = get_file_storage();
-
-    $config = new \Smalot\PdfParser\Config();
-    $config->setHorizontalOffset('');
-    $pdf_parser = new \Smalot\PdfParser\Parser([], $config);
-
+function block_slidefinder_get_content_as_chapters($match) {
     $chapters = array();
 
-    $file = $fs->get_file_by_hash($match->pathnamehash);
-    if ($file->get_mimetype() != 'application/pdf') return $chapters;
+    try {
+        $fs = get_file_storage();
 
-    $pdf = $pdf_parser->parseContent($file->get_content());
-    $pdf_details = $pdf->getDetails();
-    $pages = $pdf->getPages();
+        $config = new \Smalot\PdfParser\Config();
+        $config->setHorizontalOffset('');
+        $pdf_parser = new \Smalot\PdfParser\Parser([], $config);
 
-    for ($i = 0; $i < $pdf_details['Pages']; $i++) {
-        $chapter = new stdClass();
-        $chapter->filename = $match->filename;
-        $chapter->section = $match->section;
-        $chapter->page = $i + 1;
-        $chapter->content = $pages[$i]->getText();
-        $chapter->book_url = block_lrf_get_book_chapter_url($match->bookid, $i + 1);
-        $chapters[] = $chapter;
+        $file = $fs->get_file_by_hash($match->pathnamehash);
+        if ($file->get_mimetype() != 'application/pdf') return $chapters;
+
+        $pdf = $pdf_parser->parseContent($file->get_content());
+        $pdf_details = $pdf->getDetails();
+        $pages = $pdf->getPages();
+
+        for ($i = 0; $i < $pdf_details['Pages']; $i++) {
+            $chapter = new stdClass();
+            $chapter->filename = $match->filename;
+            $chapter->section = $match->section;
+            $chapter->page = $i + 1;
+            $chapter->content = $pages[$i]->getText();
+            $chapter->book_url = block_slidefinder_get_book_chapter_url($match->bookid, $i + 1);
+            $chapters[] = $chapter;
+        }
+    } catch (\Throwable $th) {
+        gc_collect_cycles();
+        debugging($th);
+        return null;
     }
+
     gc_collect_cycles();
     return $chapters;
 }
@@ -121,7 +171,7 @@ function block_lrf_get_content_as_chapters($match) {
  *
  * @return string url linking to the book chapter
  */
-function block_lrf_get_book_chapter_url($book_id, $pagenum) {
+function block_slidefinder_get_book_chapter_url($book_id, $pagenum) {
     global $DB;
 
     $book_type_id = $DB->get_field('modules', 'id', ['name' => 'book'], MUST_EXIST);
@@ -138,7 +188,7 @@ function block_lrf_get_book_chapter_url($book_id, $pagenum) {
  * @param int $cid ID of a course. The selected course is at the beginning of the array, else a selection method.
  * @return array Array of courses the current user has access to. Position 1 is either selected course or selection message.
  */
-function block_lrf_select_course_options(int $cid = 0) {
+function block_slidefinder_select_course_options(int $cid = 0) {
     $courses = array();
 
     foreach (get_courses() as $course) {

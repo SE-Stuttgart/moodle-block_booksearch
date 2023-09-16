@@ -25,24 +25,27 @@ defined('MOODLE_INTERNAL') || die();
 
 require_once("$CFG->libdir/externallib.php");
 
-class block_slidefinder_external extends external_api
-{
+class block_slidefinder_external extends external_api {
     /**
      * Returns description of method parameter
      * @return external_function_parameters
      */
-    public static function get_searched_locations_parameters()
-    {
+    public static function get_searched_locations_parameters() {
         return new external_function_parameters(
             array(
-                'search_string' => new external_value(
-                    PARAM_TEXT,
-                    'String to search for in the course',
+                'user_id' => new external_value(
+                    PARAM_INT,
+                    'Id of the user using the webservice',
                     VALUE_REQUIRED
                 ),
                 'course_id' => new external_value(
                     PARAM_INT,
-                    'Id of the course',
+                    'Id of the course the user wants to access',
+                    VALUE_REQUIRED
+                ),
+                'search_string' => new external_value(
+                    PARAM_TEXT,
+                    'String to search for in the course',
                     VALUE_REQUIRED
                 ),
                 'context_length' => new external_value(
@@ -56,50 +59,50 @@ class block_slidefinder_external extends external_api
     /**
      * Get all occurences, their context and a link to the chapter of $search_string in the eligable $PDF-Book lectures in the given course.
      *
-     * @param string $search_string the string to search for
+     * @param int $user_id id of the user who initiates the search
      * @param int $course_id id of the course to search in
+     * @param string $search_string the string to search for
      * @param int $context_length the size of the context snippet on each side of the found @param $seach_string occurences in words
      *
      * @return string json encoded array of arrays holding the 'filename', 'page_number', 'book_chapter_url' and 'context' of each chapter/pdf-page the $search_term was found
      * @return string return '' the $course_id was incorrect
      */
-    public static function get_searched_locations($search_string, $course_id, $context_length)
-    {
+    public static function get_searched_locations($user_id, $course_id, $search_string, $context_length) {
         global $CFG, $DB;
         require_once(__DIR__ . '/locallib.php');
-        $context = context_course::instance($course_id);
 
         // Validate parameter
         $params = self::validate_parameters(
             self::get_searched_locations_parameters(),
             array(
-                'search_string'         => $search_string,
+                'user_id'               => $user_id,
                 'course_id'             => $course_id,
+                'search_string'         => $search_string,
                 'context_length'        => $context_length
             )
         );
 
         $transaction = $DB->start_delegated_transaction();
 
-        // Get Course
+        // User.
+        if (!$user = $DB->get_record('user', array('id' => $user_id))) {
+            throw new moodle_exception(get_string('error_user_not_found', 'block_slidefinder'));
+        }
+        // Course.
         if (!$course = $DB->get_record('course', array('id' => $course_id))) {
-            return '';
+            throw new moodle_exception(get_string('error_course_not_found', 'block_slidefinder'));
         }
-        $context = context_course::instance($course_id);
-
-        // Get all Book-PDF matches
-        $matches = block_lrf_get_all_book_pdf_matches_from_course($course);
-
-        // Get PDF Content for matches
-        $chapters = array();
-        foreach ($matches as $match) {
-            $chapters = array_merge($chapters, block_lrf_get_content_as_chapters($match));
+        // Does the user have access to the course?
+        if (!can_access_course($course, $user)) {
+            throw new moodle_exception(get_string('error_course_access_denied', 'block_slidefinder'));
         }
+
+        [$chapters, $misconfiguredchapters] = block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from_course($course_id, $user_id);
 
         // Get Search Results & Context for PDFs
         $results = array();
         foreach ($chapters as $chapter) {
-            $result = self::lrf_search_content($chapter, $search_string, $context_length);
+            $result = self::search_content($chapter, $search_string, $context_length);
             if ($result) $results[] = [
                 'filename' => $result->filename,
                 'page_number' => $result->page,
@@ -116,8 +119,7 @@ class block_slidefinder_external extends external_api
      * Returns description of the method return values
      * @return external_value
      */
-    public static function get_searched_locations_returns()
-    {
+    public static function get_searched_locations_returns() {
         return new external_value(PARAM_TEXT, 'Search results', VALUE_REQUIRED);
     }
 
@@ -130,8 +132,7 @@ class block_slidefinder_external extends external_api
      *
      * @return stdClass|null the given @param $page object with the additional $page->context or null if nothing was found
      */
-    private static function lrf_search_content($page, $search_term, $context_length)
-    {
+    private static function search_content($page, $search_term, $context_length) {
         $content = ' ' . $page->content . ' ';
 
         // Is the searched word in this page?
@@ -184,8 +185,7 @@ class block_slidefinder_external extends external_api
      *
      * @return string the extracted substring
      */
-    private static function substring($string, $start, $end)
-    {
+    private static function substring($string, $start, $end) {
         $start = min($start, $end, strlen($string) - 1);
         $end = min($end, strlen($string) - 1);
 
@@ -205,8 +205,7 @@ class block_slidefinder_external extends external_api
      *
      * @return int index of the first occurence found or -1 if nothing was found
      */
-    private static function indexOf($haystack, $needle, $offset)
-    {
+    private static function indexOf($haystack, $needle, $offset) {
         $offset = min(strlen($haystack) - 1, $offset);
         $offset = max(0, $offset);
 
@@ -224,8 +223,7 @@ class block_slidefinder_external extends external_api
      *
      * @return int index of the first occurence found or -1 if nothing was found
      */
-    private static function lastIndexOf($haystack, $needle, $offset)
-    {
+    private static function lastIndexOf($haystack, $needle, $offset) {
         $offset = min(strlen($haystack) - 1, $offset);
         $offset = max(0, $offset);
 

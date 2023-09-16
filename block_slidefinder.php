@@ -35,54 +35,82 @@ class block_slidefinder extends block_base {
     }
 
     /**
-     * Describe Block Content
+     * Describe Block Content.
      */
     public function get_content() {
-        global $PAGE, $CFG, $DB, $USER;
+        global $OUTPUT, $PAGE, $DB, $USER;
 
-
-        // Context
-        $systemcontext = context_system::instance();
-        $usercontext = context_user::instance($USER->id);
-
-        // Params
-        $cid = optional_param('id', 0, PARAM_INT);              // Do we have a set course id? Or are we on our dashboard (default).
-        $lrf_cid = optional_param('lrf_cid', $cid, PARAM_INT);  // Selected course ID (by our course selection).
-        $search = optional_param('search', '', PARAM_TEXT);     // Searched pattern (search hook).
-
-        $course = null;     // Course to search in.
-        $course_id = 0;     // Course ID of searched course.
-
-        $view_course_selection = false;     // Are we displaying the course selection?
-        $view_selected_course = false;      // Are we displaying the search field? Did we select a course? Are we allowed to search said course?
-
-        // Get Course and CourseID by parameter
-        if ($course = $DB->get_record('course', array('id' => $lrf_cid))) {
-            $course_id = $course->id;
-            $coursecontext = context_course::instance($course->id);
+        if ($this->content !== null) {
+            return $this->content;
         }
 
-        // Renderer needed to use templates
-        $renderer = $PAGE->get_renderer(get_class($this));
-
-        $view_course_selection = !$cid;
-        $view_selected_course = $course_id ? can_access_course($course) : false;
+        // Params.
+        $cid = optional_param('id', 0, PARAM_INT);          // Do we have a set course id? Or are we on our dashboard (default).
+        $lrf_cid = optional_param('lrf_cid', 0, PARAM_INT); // Selected course ID (by our course selection).
+        $search = optional_param('search', '', PARAM_TEXT); // Searched pattern (search hook).
 
         // Main Content (text) and Footer of the block
         $text = '';
         $footer = '';
 
-        if ($view_course_selection) {
-            $text .= $renderer->render_from_template('block_slidefinder/lrf_drop_down', [
+        try {
+            // Get all current params.
+            $hiddenparams = $_GET;
+
+            // Filter out 'lrf_cid' as a param we use and change.
+            $hiddenparams = array_filter($hiddenparams, function ($key) {
+                return $key !== 'lrf_cid';
+            }, ARRAY_FILTER_USE_KEY);
+
+            // Restructure (for mustache) the name=>value list into a list of array objects having the name and value attribute.
+            $hiddenparams = array_map(function ($name, $value) {
+                return array("name" => $name, "value" => $value);
+            }, array_keys($hiddenparams), $hiddenparams);
+
+            if ($cid == 0) { // My Moodle Page.
+                if ($lrf_cid != 0) {
+                    // Course.
+                    if (!$course = $DB->get_record('course', array('id' => $lrf_cid))) {
+                        throw new moodle_exception(get_string('error_course_not_found', 'block_slidefinder'));
+                    }
+                    // Does the user have access to the course?
+                    if (!can_access_course($course)) {
+                        throw new moodle_exception(get_string('error_course_access_denied', 'block_slidefinder'));
+                    }
+                } else {
+                    $course = null;
+                }
+                $text .= $OUTPUT->render_from_template('block_slidefinder/lrf_drop_down', [
+                    'action' => $PAGE->url,
+                    'course_selector_param_name' => 'lrf_cid',
+                    'course_selector_options' => block_slidefinder_select_course_options($lrf_cid),
+                    'hidden_params' => $hiddenparams
+                ]);
+            } else { // Course Page.
+                // Course.
+                if (!$course = $DB->get_record('course', array('id' => $cid))) {
+                    throw new moodle_exception(get_string('error_course_not_found', 'block_slidefinder'));
+                }
+                // Does the user have access to the course?
+                if (!can_access_course($course)) {
+                    throw new moodle_exception(get_string('error_course_access_denied', 'block_slidefinder'));
+                }
+            }
+
+            $data = [[], []];
+            if (!is_null($course)) {
+                $data = block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from_course($course->id, $USER->id);
+                if (!empty($data[1])) {
+                    $footer .= get_string('misconfigured_info', get_class($this));
+                    foreach ($data[1] as $key => $value) {
+                        $footer .= '<br>';
+                        $footer .= $value;
+                    }
+                }
+            }
+
+            $text .= $OUTPUT->render_from_template('block_slidefinder/lrf_search', [
                 'action' => $PAGE->url,
-                'course_selector_param_name' => 'lrf_cid',
-                'course_selector_options' => block_lrf_select_course_options($course_id),
-            ]);
-        }
-        if ($view_selected_course) {
-            $text .= $renderer->render_from_template('block_slidefinder/lrf_search', [
-                'action' => $PAGE->url,
-                'cid' => $cid,
                 'lrf_cid' => $lrf_cid,
                 'course_selector_param_name' => 'lrf_cid',
                 'search_term_param_name' => 'search',
@@ -90,34 +118,18 @@ class block_slidefinder extends block_base {
                 'search_term_label' => get_string('search_term', get_class($this)),
                 'search_term' => $search,
                 'chapter_label' => get_string('chapter', get_class($this)),
-                'content' => base64_encode(json_encode($this->get_pdfs_content_from_course($course)))
+                'content' => base64_encode(json_encode($data[0])),
+                'hidden_params' => $hiddenparams
             ]);
+        } catch (\Throwable $th) {
+            debugging($th);
+            $text .= get_string('error_message', get_class($this));
+            $footer .= $th;
         }
 
         $this->content = new stdClass();
         $this->content->text = $text;
         $this->content->footer = $footer;
         return $this->content;
-    }
-
-    /**
-     * Returns the PDFs and their content (splitted in pages) for all eligable PDFs in the given course.
-     *
-     * @param mixed $course course to search in.
-     *
-     * @return array array of objects each holding one pdf page on content and some metadata
-     */
-    function get_pdfs_content_from_course($course): array {
-        if ($course == null) return [];
-
-        $chapters = array();
-
-        $matches = block_lrf_get_all_book_pdf_matches_from_course($course);
-
-        foreach ($matches as $match) {
-            $chapters = array_merge($chapters, block_lrf_get_content_as_chapters($match));
-        }
-
-        return $chapters;
     }
 }

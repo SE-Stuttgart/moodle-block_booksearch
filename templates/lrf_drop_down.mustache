@@ -25,27 +25,30 @@
 
         "course_selector_param_name": "lrf_cid",
         "course_selector_options": [{id:3, value:VALUE}],
+
+        "hidden_params":[{name:cache, value=1}]
     }
 }}
 <div class="simplesearchform">
     {{^inform}}
-    <form autocomplete="off" action="{{ action }}" method="get" accept-charset="utf-8" class="mform form-inline simplesearchform">
+    <form autocomplete="off" action="{{action}}" method="get" accept-charset="utf-8" class="mform form-inline simplesearchform">
     {{/inform}}
 
     <div class="input-group" style="margin: 5px; margin-right: 5rem">
-        <label for="courseinput-{{uniqid}}">
-            <span class="sr-only">{{{ course_selector_param_name }}}</span>
+        <label for="block_slidefinder_courseinput-{{uniqid}}">
+            <span class="sr-only">{{course_selector_param_name}}</span>
         </label>
         <select
-           id="courseinput-{{uniqid}}"
+           id="block_slidefinder_courseinput-{{uniqid}}"
            class="custom-select singleselect form-control"
-           name="{{ course_selector_param_name }}"
+           name="{{course_selector_param_name}}"
            data-region="input"
            style="margin-left: 0rem"
            onChange="this.form.submit()"
         >
             {{#course_selector_options}} <option value="{{id}}">{{value}}</option>{{/course_selector_options}}
         </select>
+        {{#hidden_params}} <input type="hidden" name="{{name}}" value="{{value}}"/>{{/hidden_params}}
     </div>
 
     {{^inform}}

@@ -23,7 +23,6 @@
     {
         "action": "https://moodle.local/admin/search.php",
 
-        "cid": 0,
         "lrf_cid": 0,
         "course_selector_param_name": "lrf_cid",
 
@@ -43,8 +42,8 @@
     <form autocomplete="off" action="{{ action }}" method="get" accept-charset="utf-8" class="mform form-inline simplesearchform">
     {{/inform}}
 
-    {{#cid}}<input type="hidden" name="id" value="{{cid}}"></input>{{/cid}}
     {{#lrf_cid}}<input type="hidden" name="{{course_selector_param_name}}" value="{{lrf_cid}}"></input>{{/lrf_cid}}
+    {{#hidden_params}} <input type="hidden" name="{{name}}" value="{{value}}"/>{{/hidden_params}}
 
     <div class="input-group" style="margin: 5px; margin-right: 5rem">
         <label for="searchinput-{{uniqid}}">
