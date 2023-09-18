@@ -23,18 +23,18 @@
     {
         "action": "https://moodle.local/admin/search.php",
 
-        "lrf_cid": 0,
-        "course_selector_param_name": "lrf_cid",
+        "cid": 0,
+        "course_selector_param_name": "slidefinderid",
 
         "search_term_param_name" : "search",
         "search_term_placeholder": "Search",
 
         "search_term_label": "Search Term:",
-        "search_term": "?",
+        "search_term": "test",
 
         "chapter_label": "chapter",
 
-        "content": ?,
+        "content": "[{content: "test", filename: "test.pdf", page: 1}]",
     }
 }}
 <div class="simplesearchform">
@@ -42,7 +42,7 @@
     <form autocomplete="off" action="{{ action }}" method="get" accept-charset="utf-8" class="mform form-inline simplesearchform">
     {{/inform}}
 
-    {{#lrf_cid}}<input type="hidden" name="{{course_selector_param_name}}" value="{{lrf_cid}}"></input>{{/lrf_cid}}
+    {{#cid}}<input type="hidden" name="{{course_selector_param_name}}" value="{{cid}}"></input>{{/cid}}
     {{#hidden_params}} <input type="hidden" name="{{name}}" value="{{value}}"/>{{/hidden_params}}
 
     <div class="input-group" style="margin: 5px; margin-right: 5rem">

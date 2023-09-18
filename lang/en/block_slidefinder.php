@@ -33,7 +33,7 @@ $string['chapter'] = 'Chapter';
 $string['misconfigured_info'] = 'The following files are flagged as matching but have not been set up correctly. '
     . 'Maybe there is a chapter count mismatch between book and pdf?';
 
-//Search Field.
+// Search Field.
 $string['search'] = 'Search keyword...';
 $string['select_course'] = 'Select course...';
 

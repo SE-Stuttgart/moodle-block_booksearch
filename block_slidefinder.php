@@ -23,14 +23,20 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-require_once(__DIR__ . '/../../config.php');
 require_once(__DIR__ . '/locallib.php');
 
+define('BLOCK_SLIDEFINDER_SLIDEFINDER_PARAM', 'slidefinderid');
+
+/**
+ * The slidefinder block class.
+ * 
+ * Used to create the slidefinder block. Base of all slidefinder block functionality & UI.
+ */
 class block_slidefinder extends block_base {
     /**
      * Set the initial properties for the block
      */
-    function init() {
+    public function init() {
         $this->title = get_string('pluginname', get_class($this));
     }
 
@@ -38,18 +44,19 @@ class block_slidefinder extends block_base {
      * Describe Block Content.
      */
     public function get_content() {
-        global $OUTPUT, $PAGE, $DB, $USER;
+        global $OUTPUT, $DB, $USER;
 
         if ($this->content !== null) {
             return $this->content;
         }
 
+
         // Params.
         $cid = optional_param('id', 0, PARAM_INT);          // Do we have a set course id? Or are we on our dashboard (default).
-        $lrf_cid = optional_param('lrf_cid', 0, PARAM_INT); // Selected course ID (by our course selection).
+        $slidefinderid = optional_param(BLOCK_SLIDEFINDER_SLIDEFINDER_PARAM, 0, PARAM_INT); // Selected course ID (by our course selection).
         $search = optional_param('search', '', PARAM_TEXT); // Searched pattern (search hook).
 
-        // Main Content (text) and Footer of the block
+        // Main Content (text) and Footer of the block.
         $text = '';
         $footer = '';
 
@@ -57,9 +64,9 @@ class block_slidefinder extends block_base {
             // Get all current params.
             $hiddenparams = $_GET;
 
-            // Filter out 'lrf_cid' as a param we use and change.
+            // Filter out BLOCK_SLIDEFINDER_SLIDEFINDER_PARAM as a param we use and change.
             $hiddenparams = array_filter($hiddenparams, function ($key) {
-                return $key !== 'lrf_cid';
+                return $key !== BLOCK_SLIDEFINDER_SLIDEFINDER_PARAM;
             }, ARRAY_FILTER_USE_KEY);
 
             // Restructure (for mustache) the name=>value list into a list of array objects having the name and value attribute.
@@ -68,9 +75,9 @@ class block_slidefinder extends block_base {
             }, array_keys($hiddenparams), $hiddenparams);
 
             if ($cid == 0) { // My Moodle Page.
-                if ($lrf_cid != 0) {
+                if ($slidefinderid != 0) {
                     // Course.
-                    if (!$course = $DB->get_record('course', array('id' => $lrf_cid))) {
+                    if (!$course = $DB->get_record('course', array('id' => $slidefinderid))) {
                         throw new moodle_exception(get_string('error_course_not_found', 'block_slidefinder'));
                     }
                     // Does the user have access to the course?
@@ -81,9 +88,9 @@ class block_slidefinder extends block_base {
                     $course = null;
                 }
                 $text .= $OUTPUT->render_from_template('block_slidefinder/lrf_drop_down', [
-                    'action' => $PAGE->url,
-                    'course_selector_param_name' => 'lrf_cid',
-                    'course_selector_options' => block_slidefinder_select_course_options($lrf_cid),
+                    'action' => $this->page->url,
+                    'course_selector_param_name' => BLOCK_SLIDEFINDER_SLIDEFINDER_PARAM,
+                    'course_selector_options' => block_slidefinder_select_course_options($slidefinderid),
                     'hidden_params' => $hiddenparams
                 ]);
             } else { // Course Page.
@@ -110,9 +117,9 @@ class block_slidefinder extends block_base {
             }
 
             $text .= $OUTPUT->render_from_template('block_slidefinder/lrf_search', [
-                'action' => $PAGE->url,
-                'lrf_cid' => $lrf_cid,
-                'course_selector_param_name' => 'lrf_cid',
+                'action' => $this->page->url,
+                'cid' => $slidefinderid,
+                'course_selector_param_name' => BLOCK_SLIDEFINDER_SLIDEFINDER_PARAM,
                 'search_term_param_name' => 'search',
                 'search_term_placeholder' => get_string('search', get_class($this)),
                 'search_term_label' => get_string('search_term', get_class($this)),
