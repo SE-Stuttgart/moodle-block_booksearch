@@ -24,7 +24,6 @@
 defined('MOODLE_INTERNAL') || die();
 
 $capabilities = array(
-
     'block/slidefinder:myaddinstance' => array(
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
@@ -35,7 +34,6 @@ $capabilities = array(
     ),
 
     'block/slidefinder:addinstance' => array(
-        //'riskbitmask' => RISK_PERSONAL,
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
         'archetypes' => array(

@@ -24,32 +24,32 @@
 defined('MOODLE_INTERNAL') || die();
 
 $functions = array(
-    // local_PLUGINNAME_FUNCTIONNAME is the name of the web service function that the client will call.
+    // Info: local_PLUGINNAME_FUNCTIONNAME is the name of the web service function that the client will call.
     'block_slidefinder_get_searched_locations' => array(
 
-        //class containing the external function
+        // Class containing the external function.
         'classname'     => 'block_slidefinder_external',
 
-        //external function name
+        // External function name.
         'methodname'    => 'get_searched_locations',
 
-        //file containing the class/external function - not required if using namespaced auto-loading classes.
-        // defaults to the service's externalib.php
+        // File containing the class/external function - not required if using namespaced auto-loading classes.
+        // Defaults to the service's externalib.php.
         'classpath'   => 'blocks/slidefinder/externallib.php',
 
-        // This documentation will be displayed in the generated API documentation
-        // (Administration > Plugins > Webservices > API documentation)
+        // This documentation will be displayed in the generated API documentation.
+        // Administration > Plugins > Webservices > API documentation.
         'description'   => 'This is a web service for the chatbot from the University of Stuttgart.',
 
-        // the value is 'write' if your function does any database change, otherwise it is 'read'.
+        // The value is 'write' if your function does any database change, otherwise it is 'read'.
         'type'          => 'read',
 
-        // true/false if you allow this web service function to be callable via ajax
+        // True/False if you allow this web service function to be callable via ajax.
         'ajax'          => false,
 
-        // List the capabilities required by the function (those in a require_capability() call)
-        // (missing capabilities are displayed for authorised users and
-        // also for manually created tokens in the web interface, this is just informative).
+        // List the capabilities required by the function (those in a require_capability() call).
+        // Missing capabilities are displayed for authorised users.
+        // And also for manually created tokens in the web interface, this is just informative.
         'capabilities'  => '',
 
         // Optional, only available for Moodle 3.1 onwards.

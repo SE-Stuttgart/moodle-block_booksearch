@@ -22,20 +22,14 @@
     Example context (json):
     {
         "action": "https://moodle.local/admin/search.php",
-
         "cid": 0,
-        "lrf_cid": 0,
-        "course_selector_param_name": "lrf_cid",
-
+        "course_selector_param_name": "slidefinderid",
         "search_term_param_name" : "search",
         "search_term_placeholder": "Search",
-
         "search_term_label": "Search Term:",
-        "search_term": "?",
-
+        "search_term": "test",
         "chapter_label": "chapter",
-
-        "content": ?,
+        "content": "[{\"content\":\"test\",\"filename\":\"test.pdf\",\"page\":1}]"
     }
 }}
 <div class="simplesearchform">
@@ -43,8 +37,8 @@
     <form autocomplete="off" action="{{ action }}" method="get" accept-charset="utf-8" class="mform form-inline simplesearchform">
     {{/inform}}
 
-    {{#cid}}<input type="hidden" name="id" value="{{cid}}"></input>{{/cid}}
-    {{#lrf_cid}}<input type="hidden" name="{{course_selector_param_name}}" value="{{lrf_cid}}"></input>{{/lrf_cid}}
+    {{#cid}}<input type="hidden" name="{{course_selector_param_name}}" value="{{cid}}"></input>{{/cid}}
+    {{#hidden_params}} <input type="hidden" name="{{name}}" value="{{value}}"/>{{/hidden_params}}
 
     <div class="input-group" style="margin: 5px; margin-right: 5rem">
         <label for="searchinput-{{uniqid}}">
@@ -59,7 +53,7 @@
            data-region="input"
            autocomplete="off"
            oninput="lrfUpdateSearch()"
-        ></input>
+        >
         <div class="input-group-append">
             <button type="submit" class="btn {{^btnclass}}btn-submit{{/btnclass}} {{ btnclass }} search-icon">
                 {{#pix}} a/search, core {{/pix}}
@@ -172,7 +166,7 @@
                 display += '<ul style="max-height: 200px; overflow: auto;">';
                 for (var chapter in lrf_searched_content[pdf_name]) {
                     display += '<li>' +
-                        '<a href="' + lrf_searched_content[pdf_name][chapter].book_url + '">' +
+                        '<a href="' + lrf_searched_content[pdf_name][chapter].bookurl + '">' +
                         '{{chapter_label}}' + '-' + chapter +
                         '</a>: ' + lrf_searched_content[pdf_name][chapter].context +
                         '</li>';

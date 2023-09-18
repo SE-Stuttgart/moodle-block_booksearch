@@ -26,21 +26,70 @@ defined('MOODLE_INTERNAL') || die();
 require_once(__DIR__ . '/pdfparser/alt_autoload.php-dist');
 
 /**
+ * Return the content & link of all chapters that are part of an eliganble book-pdf match in the given course.
+ *
+ * @param int $courseid ID of the course to be searched
+ * @param int $userid ID of the user initiating the search
+ *
+ * @return array [0] list of chapters (content, link, other metadata). One chapter for each eligable book chaper in course.
+ * @return array [1] list of filenames of intended eligable pairs that have a problem
+ */
+function block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from_course($courseid, $userid) {
+    global $DB;
+
+    $coursechapters = array();
+    $misconfiguredcoursechapters = array();
+
+    try {
+        // Course.
+        if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+            throw new moodle_exception(get_string('error_course_not_found', 'block_slidefinder'));
+        }
+        // Does the user have access to the course?
+        if (!can_access_course($course, $userid)) {
+            throw new moodle_exception(get_string('error_course_access_denied', 'block_slidefinder'));
+        }
+    } catch (\Throwable $th) {
+        debugging($th);
+        return [$coursechapters, $misconfiguredcoursechapters];
+    }
+
+    $matches = block_slidefinder_get_all_book_pdf_matches_from_course($course);
+
+    foreach ($matches as $match) {
+        $matchchapters = block_slidefinder_get_content_as_chapters($match);
+        if (!is_null($matchchapters) && !empty($matchchapters)) {
+            $coursechapters = array_merge($coursechapters, $matchchapters);
+        } else {
+            $misconfiguredcoursechapters[] = $match->filename;
+        }
+    }
+
+    return [$coursechapters, $misconfiguredcoursechapters];
+}
+
+/**
  * Return a list of all eligable book-pdf matches in a given course.
  *
  * @param mixed $course course to search in
  *
- * @return array list of matches as objects containing pdf file information and book_id
+ * @return array list of matches as objects containing pdf file information and bookid
  */
-function block_lrf_get_all_book_pdf_matches_from_course($course)
-{
-    // Get all PDFs from course
+function block_slidefinder_get_all_book_pdf_matches_from_course($course) {
+    // Get all PDFs from course.
     $fs = get_file_storage();
     $pdfs = array();
     foreach (get_all_instances_in_course('resource', $course) as $resource) {
-        // Get all resources
+        // Get all resources.
         $cm = get_coursemodule_from_instance('resource', $resource->id, $resource->course, false, MUST_EXIST);
-        $files = $fs->get_area_files(context_module::instance($cm->id)->id, 'mod_resource', 'content', 0, 'sortorder DESC, id ASC', false);
+        $files = $fs->get_area_files(
+            context_module::instance($cm->id)->id,
+            'mod_resource',
+            'content',
+            0,
+            'sortorder DESC, id ASC',
+            false
+        );
         if (count($files) < 1) {
             resource_print_filenotfound($resource, $cm, $course);
             die;
@@ -49,30 +98,38 @@ function block_lrf_get_all_book_pdf_matches_from_course($course)
             unset($files);
         }
 
-        // Only allow PDFs
-        if ($file->get_mimetype() != 'application/pdf') continue;
+        // Only allow PDFs.
+        if ($file->get_mimetype() != 'application/pdf') {
+            continue;
+        }
 
         $r = new stdClass();
         $r->pathnamehash = $file->get_pathnamehash();
         $r->filename = $file->get_filename();
         $r->section = $resource->section;
-        $r->resourcename = trim(preg_replace('/\s*\[[^]]*\](?![^[]*\[)/', '', preg_replace('/\s*\([^)]*\)(?![^(]*\()/', '', $resource->name)));
+        $r->resourcename =
+            trim(preg_replace('/\s*\[[^]]*\](?![^[]*\[)/', '', preg_replace('/\s*\([^)]*\)(?![^(]*\()/', '', $resource->name)));
         $pdfs[] = $r;
     }
 
-    // Get all books from course
-    $sectioned_books = array();
+    // Get all books from course.
+    $sectionedbooks = array();
     $books = get_all_instances_in_course('book', $course);
     foreach ($books as $book) {
-        $sectioned_books[$book->section][$book->id] = trim(preg_replace('/\s*\[[^]]*\](?![^[]*\[)/', '', preg_replace('/\s*\([^)]*\)(?![^(]*\()/', '', $book->name)));
+        $sectionedbooks[$book->section][$book->id] =
+            trim(preg_replace('/\s*\[[^]]*\](?![^[]*\[)/', '', preg_replace('/\s*\([^)]*\)(?![^(]*\()/', '', $book->name)));
     }
 
-    // Get all book-PDF matches
+    // Get all book-PDF matches.
     $matches = array();
     foreach ($pdfs as $pdf) {
-        if (!isset($sectioned_books[$pdf->section])) continue;
-        $pdf->bookid = array_search($pdf->resourcename, $sectioned_books[$pdf->section]);
-        if ($pdf->bookid) $matches[] = $pdf;
+        if (!isset($sectionedbooks[$pdf->section])) {
+            continue;
+        }
+        $pdf->bookid = array_search($pdf->resourcename, $sectionedbooks[$pdf->section]);
+        if ($pdf->bookid) {
+            $matches[] = $pdf;
+        }
     }
 
     return $matches;
@@ -85,32 +142,40 @@ function block_lrf_get_all_book_pdf_matches_from_course($course)
  *
  * @return array list of objects containing the content and some metadata of one PDF page.
  */
-function block_lrf_get_content_as_chapters($match)
-{
-    $fs = get_file_storage();
-
-    $config = new \Smalot\PdfParser\Config();
-    $config->setHorizontalOffset('');
-    $pdf_parser = new \Smalot\PdfParser\Parser([], $config);
-
+function block_slidefinder_get_content_as_chapters($match) {
     $chapters = array();
 
-    $file = $fs->get_file_by_hash($match->pathnamehash);
-    if ($file->get_mimetype() != 'application/pdf') return $chapters;
+    try {
+        $fs = get_file_storage();
 
-    $pdf = $pdf_parser->parseContent($file->get_content());
-    $pdf_details = $pdf->getDetails();
-    $pages = $pdf->getPages();
+        $config = new \Smalot\PdfParser\Config();
+        $config->setHorizontalOffset('');
+        $pdfparser = new \Smalot\PdfParser\Parser([], $config);
 
-    for ($i = 0; $i < $pdf_details['Pages']; $i++) {
-        $chapter = new stdClass();
-        $chapter->filename = $match->filename;
-        $chapter->section = $match->section;
-        $chapter->page = $i + 1;
-        $chapter->content = $pages[$i]->getText();
-        $chapter->book_url = block_lrf_get_book_chapter_url($match->bookid, $i + 1);
-        $chapters[] = $chapter;
+        $file = $fs->get_file_by_hash($match->pathnamehash);
+        if ($file->get_mimetype() != 'application/pdf') {
+            return $chapters;
+        }
+
+        $pdf = $pdfparser->parseContent($file->get_content());
+        $pdfdetails = $pdf->getDetails();
+        $pages = $pdf->getPages();
+
+        for ($i = 0; $i < $pdfdetails['Pages']; $i++) {
+            $chapter = new stdClass();
+            $chapter->filename = $match->filename;
+            $chapter->section = $match->section;
+            $chapter->page = $i + 1;
+            $chapter->content = $pages[$i]->getText();
+            $chapter->bookurl = block_slidefinder_get_book_chapter_url($match->bookid, $i + 1);
+            $chapters[] = $chapter;
+        }
+    } catch (\Throwable $th) {
+        gc_collect_cycles();
+        debugging($th);
+        return null;
     }
+
     gc_collect_cycles();
     return $chapters;
 }
@@ -118,94 +183,50 @@ function block_lrf_get_content_as_chapters($match)
 /**
  * Create and return an url linking to a specific book chapter.
  *
- * @param int $book_id id of the book
+ * @param int $bookid id of the book
  * @param int $pagenum chapter number / pdf page num
  *
  * @return string url linking to the book chapter
  */
-function block_lrf_get_book_chapter_url($book_id, $pagenum)
-{
+function block_slidefinder_get_book_chapter_url($bookid, $pagenum) {
     global $DB;
 
-    $book_type_id = $DB->get_field('modules', 'id', ['name' => 'book'], MUST_EXIST);
-    $cm_id = $DB->get_field('course_modules', 'id', ['module' => $book_type_id, 'instance' => $book_id], MUST_EXIST);
-    $bc_id = $DB->get_field('book_chapters', 'id', ['bookid' => $book_id, 'pagenum' => $pagenum], MUST_EXIST);
+    $booktypeid = $DB->get_field('modules', 'id', ['name' => 'book'], MUST_EXIST);
+    $cmid = $DB->get_field('course_modules', 'id', ['module' => $booktypeid, 'instance' => $bookid], MUST_EXIST);
+    $chapterid = $DB->get_field('book_chapters', 'id', ['bookid' => $bookid, 'pagenum' => $pagenum], MUST_EXIST);
 
-    $url = new moodle_url('/mod/book/view.php', ['id' => $cm_id, 'chapterid' => $bc_id]);
+    $url = new moodle_url('/mod/book/view.php', ['id' => $cmid, 'chapterid' => $chapterid]);
 
     return $url->out(false);
 }
 
 /**
- * Returns a course with the given id, else selection of courses
- * @param int $id Given course id
- * @return array list of courses which user can choose from
+ * Create and Return an (id => fullname) array for all courses the current user can access.
+ * @param int $cid ID of a course. The selected course is at the beginning of the array, else a selection method.
+ * @return array Array of courses the current user has access to. Position 1 is either selected course or selection message.
  */
-function block_lrf_select_course_options(int $selected_course_id, int $user_id)
-{
-    global $DB;
+function block_slidefinder_select_course_options(int $cid = 0) {
+    $courses = array();
 
-    // Array of possible courses
-    $courses_shown = array();
-
-    if ($user_id >= 0) {
-
-        // get all course_id's for course user is enrolled in
-        $params = array('userid' => $user_id);
-        $sql = "SELECT e.courseid FROM  {enrol} e
-            JOIN {user_enrolments} ue ON e.id = ue.enrolid
-            WHERE ue.status = 0 AND ue.userid = :userid";
-        $enrolled_courses = $DB->get_records_sql($sql, $params);
-
-        // Create array of course_id's the user is enrolled in
-        $eCourse_list = [];
-        foreach ($enrolled_courses as $enrolled_course) {
-            $eCourse_list[] = $enrolled_course->courseid;
+    foreach (get_courses() as $course) {
+        if (can_access_course($course)) {
+            $courses[$course->id] = (object)['id' => $course->id, 'value' => $course->fullname];
         }
+    }
 
-        // Create array of all courses the user is enrolled in
-        foreach ($DB->get_records('course') as $course) {
-            if (in_array($course->id, $eCourse_list)) $courses_shown[$course->id] = $course->fullname;
+    if ($cid > 0) {
+        try {
+            if (can_access_course($course = get_course($cid))) {
+                unset($courses[$cid]);
+                array_unshift($courses, (object)['id' => $course->id, 'value' => $course->fullname]);
+            }
+        } catch (\Throwable $th) {
+            throw $th;
+            return array();
         }
     } else {
-        // Create array for all courses independant if user is enrolled
-        foreach ($DB->get_records('course') as $course) {
-            $courses_shown[$course->id] = $course->fullname;
-        }
+        array_unshift($courses, (object)['id' => 0, 'value' => get_string('select_course', 'block_slidefinder')]);
     }
 
-    // Array of course_id fullname pairs for displayal as a dropdown
-    $courses_html = array();
-
-    if ($selected_course_id) {
-        $courses_html[0] = (object)['id' => $selected_course_id, 'value' => $courses_shown[$selected_course_id]];
-        unset($courses_shown[$selected_course_id]);
-    } else {
-        $courses_html[0] = (object)['id' => 0, 'value' => get_string('select_course', 'block_slidefinder')];
-    }
-
-    foreach ($courses_shown as $key => $value) {
-        $courses_html[] = (object)['id' => $key, 'value' => $value];
-    }
-
-    return $courses_html;
-}
-
-/**
- * Checks if a user is actively enrolled in a given course.
- * @param int $user_id ID of the user
- * @param int $course_id ID of the course
- */
-function block_lrf_enrolled_in($user_id, $course_id)
-{
-    global $DB;
-
-    $params = array('userid' => $user_id, 'courseid' => $course_id);
-    $sql = "SELECT e.courseid FROM  {enrol} e
-            JOIN {user_enrolments} ue ON e.id = ue.enrolid
-            WHERE ue.status = 0 AND ue.userid = :userid AND e.courseid = :courseid";
-    $enrolled_courses = $DB->get_records_sql($sql, $params);
-
-    if (!$enrolled_courses) return false;
-    return true;
+    return $courses;
 }
