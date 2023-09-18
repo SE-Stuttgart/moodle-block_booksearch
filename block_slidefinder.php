@@ -29,6 +29,7 @@ define('BLOCK_SLIDEFINDER_SLIDEFINDER_PARAM', 'slidefinderid');
 
 /**
  * The slidefinder block class.
+ *
  * Used to create the slidefinder block. Base of all slidefinder block functionality & UI.
  */
 class block_slidefinder extends block_base {

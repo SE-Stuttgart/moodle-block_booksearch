@@ -158,10 +158,10 @@ function block_slidefinder_get_content_as_chapters($match) {
         }
 
         $pdf = $pdfparser->parseContent($file->get_content());
-        $pdf_details = $pdf->getDetails();
+        $pdfdetails = $pdf->getDetails();
         $pages = $pdf->getPages();
 
-        for ($i = 0; $i < $pdf_details['Pages']; $i++) {
+        for ($i = 0; $i < $pdfdetails['Pages']; $i++) {
             $chapter = new stdClass();
             $chapter->filename = $match->filename;
             $chapter->section = $match->section;

@@ -27,6 +27,7 @@ require_once("$CFG->libdir/externallib.php");
 
 /**
  * External class for the slidefinder block.
+ *
  * Let's a webservice use the slidefinder functionality.
  */
 class block_slidefinder_external extends external_api {
