@@ -108,6 +108,9 @@ class block_slidefinder_external extends external_api {
             return '';
         }
 
+        $coursecontext = context_course::instance($course->id);
+        self::validate_context($coursecontext);
+
         [$chapters, $misconfiguredchapters] =
             block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from_course($courseid, $userid);
 
