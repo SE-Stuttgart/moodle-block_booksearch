@@ -25,6 +25,6 @@ defined('MOODLE_INTERNAL') || die();
 
 $plugin->version   = 2023091601;  // The current plugin version (Date: YYYYMMDDHH).
 $plugin->requires  = 2020061510;  // Requires this Moodle version.
-$plugin->component = 'block_slidefinder';  // Full name of the plugin (used for diagnostics)
+$plugin->component = 'block_slidefinder';  // Full name of the plugin (used for diagnostics).
 $plugin->release = '1.1.1';
 $plugin->maturity = MATURITY_STABLE;

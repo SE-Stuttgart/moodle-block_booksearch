@@ -22,19 +22,14 @@
     Example context (json):
     {
         "action": "https://moodle.local/admin/search.php",
-
         "cid": 0,
         "course_selector_param_name": "slidefinderid",
-
         "search_term_param_name" : "search",
         "search_term_placeholder": "Search",
-
         "search_term_label": "Search Term:",
         "search_term": "test",
-
         "chapter_label": "chapter",
-
-        "content": "[{content: "test", filename: "test.pdf", page: 1}]",
+        "content": "[{"content": "test", "filename": "test.pdf", "page": 1}]",
     }
 }}
 <div class="simplesearchform">
@@ -171,7 +166,7 @@
                 display += '<ul style="max-height: 200px; overflow: auto;">';
                 for (var chapter in lrf_searched_content[pdf_name]) {
                     display += '<li>' +
-                        '<a href="' + lrf_searched_content[pdf_name][chapter].book_url + '">' +
+                        '<a href="' + lrf_searched_content[pdf_name][chapter].bookurl + '">' +
                         '{{chapter_label}}' + '-' + chapter +
                         '</a>: ' + lrf_searched_content[pdf_name][chapter].context +
                         '</li>';

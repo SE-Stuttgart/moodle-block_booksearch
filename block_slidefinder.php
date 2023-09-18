@@ -29,7 +29,6 @@ define('BLOCK_SLIDEFINDER_SLIDEFINDER_PARAM', 'slidefinderid');
 
 /**
  * The slidefinder block class.
- * 
  * Used to create the slidefinder block. Base of all slidefinder block functionality & UI.
  */
 class block_slidefinder extends block_base {
@@ -50,10 +49,9 @@ class block_slidefinder extends block_base {
             return $this->content;
         }
 
-
         // Params.
         $cid = optional_param('id', 0, PARAM_INT);          // Do we have a set course id? Or are we on our dashboard (default).
-        $slidefinderid = optional_param(BLOCK_SLIDEFINDER_SLIDEFINDER_PARAM, 0, PARAM_INT); // Selected course ID (by our course selection).
+        $slidefinderid = optional_param(BLOCK_SLIDEFINDER_SLIDEFINDER_PARAM, 0, PARAM_INT); // Selected course ID.
         $search = optional_param('search', '', PARAM_TEXT); // Searched pattern (search hook).
 
         // Main Content (text) and Footer of the block.

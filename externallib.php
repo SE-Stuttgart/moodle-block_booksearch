@@ -27,7 +27,6 @@ require_once("$CFG->libdir/externallib.php");
 
 /**
  * External class for the slidefinder block.
- * 
  * Let's a webservice use the slidefinder functionality.
  */
 class block_slidefinder_external extends external_api {
@@ -69,7 +68,7 @@ class block_slidefinder_external extends external_api {
      * @param string $searchstring the string to search for
      * @param int $contextlength the size of the context snippet on each side of the found $seach_string occurences in words
      *
-     * @return string json encoded array of arrays holding the 'filename', 'page_number', 'book_chapter_url' and 'context' 
+     * @return string json encoded array of arrays holding the 'filename', 'page_number', 'book_chapter_url' and 'context'
      * of each chapter/pdf-page the $searchterm was found
      * @return string return '' if there is an error
      */
@@ -77,7 +76,7 @@ class block_slidefinder_external extends external_api {
         global $CFG, $DB;
         require_once(__DIR__ . '/locallib.php');
 
-        // Validate parameter
+        // Validate parameter.
         $params = self::validate_parameters(
             self::get_searched_locations_parameters(),
             array(
@@ -119,7 +118,7 @@ class block_slidefinder_external extends external_api {
                 $results[] = [
                     'filename' => $result->filename,
                     'page_number' => $result->page,
-                    'book_chapter_url' => $result->book_url,
+                    'book_chapter_url' => $result->bookurl,
                     'context_snippet' => $result->context
                 ];
             }
@@ -138,7 +137,7 @@ class block_slidefinder_external extends external_api {
     }
 
     /**
-     * Searches for the $searchterm in the given $page->content and 
+     * Searches for the $searchterm in the given $page->content and
      * returns the page with a $page->context context snippet if it was found. returns null if not.
      *
      * @param stdClass $page object that holds the $page->content and gets returned containing the $page->context
@@ -194,7 +193,7 @@ class block_slidefinder_external extends external_api {
     }
 
     /**
-     * Alternate function to PHPs substr() to put it more in line with the javascript equivalent. 
+     * Alternate function to PHPs substr() to put it more in line with the javascript equivalent.
      * Returns the substring of a given string with start and end index given.
      *
      * @param string $string source string to  extract from
@@ -215,7 +214,7 @@ class block_slidefinder_external extends external_api {
     }
 
     /**
-     * Alternate function to PHPs stripos() to put it more in line with the javascript equivalent. 
+     * Alternate function to PHPs stripos() to put it more in line with the javascript equivalent.
      * Left to right search returns the index of the first occurence of the needle in the given haystack starting at index offset.
      *
      * @param string $haystack string to search in
@@ -236,7 +235,7 @@ class block_slidefinder_external extends external_api {
     }
 
     /**
-     * Alternate function to PHPs strripos() to put it more in line with the javascript equivalent. 
+     * Alternate function to PHPs strripos() to put it more in line with the javascript equivalent.
      * Right to left search returns the index of the first occurence of the needle in the given haystack starting at index offset.
      *
      * @param string $haystack string to search in
