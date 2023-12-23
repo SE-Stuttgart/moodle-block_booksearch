@@ -163,7 +163,7 @@ function block_slidefinder_get_content_as_chapters($match) {
 
         for ($i = 0; $i < $pdfdetails['Pages']; $i++) {
             $chapter = new stdClass();
-            $chapter->filename = $match->filename;
+            $chapter->filename = str_replace('.pdf', get_string('pdf_replace', 'block_slidefinder'), $match->filename);
             $chapter->section = $match->section;
             $chapter->page = $i + 1;
             $chapter->content = $pages[$i]->getText();

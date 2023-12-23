@@ -31,6 +31,7 @@ $string['search_term'] = 'Gesucht: ';
 $string['chapter'] = 'Kapitel';
 $string['misconfigured_info'] = 'Die folgenden Dateien sind zwar als übereinstimmend gekennzeichnet, '
     . 'wurden aber nicht korrekt eingerichtet. Vielleicht stimmt die Kapitelanzahl zwischen Buch und pdf nicht überein?';
+$string['pdf_replace'] = ' (Buch)';
 
 // Search Field.
 $string['search'] = 'Suche...';

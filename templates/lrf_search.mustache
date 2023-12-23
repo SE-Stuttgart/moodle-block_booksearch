@@ -114,38 +114,56 @@
         * @param {*} page
         */
         function lrfSearchContent(page) {
-            var _content = ' ' + page.content.toLowerCase() + ' ';
-            var _search = lrf_search_term.toLowerCase();
-
             // Is the searched word in this page?
-            if (!(_content.includes(_search))) return;
+            if (!page.content.toLowerCase().includes(lrf_search_term.toLowerCase())) {
+                return;
+            }
 
-            // Create a String with all occurences & context
-            var context = '';
+            // Split the text into words.
+            let words = page.content.split(/\s+/);
 
-            var index = _content.indexOf(_search);
-            var index_end = -1;
+            let snippets = [];
+            let snippetIndex = 0;
+            
+            // Iterate through the words to find occurrences of the search word.
+            // Save the context snippet indices.
+            for (let i = 0; i < words.length; i++) {
+                if (words[i].toLowerCase().includes(lrf_search_term.toLowerCase())) {
+                    // Calculate start and end indices for the context.
+                    let start = Math.max(0, i - context_length);
+                    let end = Math.min(words.length - 1, i + context_length);
 
-            while (0 <= index) {
-                var i_start = index;
-                var i_end = index;
-                for (var i = 0; i < context_length; i++) {
-                    i_start = _content.lastIndexOf(' ', i_start - 1);
-                    i_end = _content.indexOf(' ', i_end + 1);
-                    if (i_end < i_start) {
-                        i_end = _content.length;
+                    if (snippetIndex > 0 && start - snippets[snippetIndex - 1][1] < context_length) {
+                        snippets[snippetIndex - 1][1] = end;
+                    } else {
+                        snippets.push([start, end]);
+                        snippetIndex++;
                     }
                 }
-                if (i_start > index_end) {
-                    context += '...';
-                    context += page.content.substring(i_start, i_end);
-                } else {
-                    context += page.content.substring(index_end + 1, i_end);
-                }
-                index_end = i_end;
-                index = _content.indexOf(_search, index + 1);
             }
-            context += '...';
+
+            // Turn the snippet indices into actual text snippets.
+            for (let i = 0; i < snippets.length; i++) {
+                let [start, end] = snippets[i];
+                // Extract the context around the search word.
+                let snippet = words.slice(start, end + 1).join(' ');
+
+                // Add "..." at the beginning if not at the start of the text.
+                if (start > 0) {
+                    snippet = '...' + snippet;
+                }
+
+                // Add "..." at the end if not at the end of the text.
+                if (end < words.length - 1) {
+                    snippet += '...';
+                }
+
+                // Update snippet with text.
+                snippets[i] = snippet;
+            }
+            
+            // Create a string with all occurrences & context.
+            let context = snippets.join(' ... ');
 
             page.context = context;
             if (!(page.filename in lrf_searched_content)) {
