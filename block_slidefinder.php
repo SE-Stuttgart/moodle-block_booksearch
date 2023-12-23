@@ -70,13 +70,13 @@ class block_slidefinder extends block_base {
 
             // Restructure (for mustache) the name=>value list into a list of array objects having the name and value attribute.
             $hiddenparams = array_map(function ($name, $value) {
-                return array("name" => $name, "value" => $value);
+                return ["name" => $name, "value" => $value];
             }, array_keys($hiddenparams), $hiddenparams);
 
             if ($cid == 0) { // My Moodle Page.
                 if ($slidefinderid != 0) {
                     // Course.
-                    if (!$course = $DB->get_record('course', array('id' => $slidefinderid))) {
+                    if (!$course = $DB->get_record('course', ['id' => $slidefinderid])) {
                         throw new moodle_exception(get_string('error_course_not_found', 'block_slidefinder'));
                     }
                     // Does the user have access to the course?
@@ -90,11 +90,11 @@ class block_slidefinder extends block_base {
                     'action' => $this->page->url,
                     'course_selector_param_name' => BLOCK_SLIDEFINDER_SLIDEFINDER_PARAM,
                     'course_selector_options' => block_slidefinder_select_course_options($slidefinderid),
-                    'hidden_params' => $hiddenparams
+                    'hidden_params' => $hiddenparams,
                 ]);
             } else { // Course Page.
                 // Course.
-                if (!$course = $DB->get_record('course', array('id' => $cid))) {
+                if (!$course = $DB->get_record('course', ['id' => $cid])) {
                     throw new moodle_exception(get_string('error_course_not_found', 'block_slidefinder'));
                 }
                 // Does the user have access to the course?
@@ -125,7 +125,7 @@ class block_slidefinder extends block_base {
                 'search_term' => $search,
                 'chapter_label' => get_string('chapter', get_class($this)),
                 'content' => base64_encode(json_encode($data[0])),
-                'hidden_params' => $hiddenparams
+                'hidden_params' => $hiddenparams,
             ]);
         } catch (\Throwable $th) {
             debugging($th);

@@ -23,22 +23,22 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$capabilities = array(
-    'block/slidefinder:myaddinstance' => array(
+$capabilities = [
+    'block/slidefinder:myaddinstance' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => array(
+        'archetypes' => [
             'guest'          => CAP_ALLOW,
-        ),
-        'clonepermissionsfrom' => 'moodle/my:manageblocks'
-    ),
+        ],
+        'clonepermissionsfrom' => 'moodle/my:manageblocks',
+    ],
 
-    'block/slidefinder:addinstance' => array(
+    'block/slidefinder:addinstance' => [
         'captype' => 'write',
         'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => array(
+        'archetypes' => [
             'user'          => CAP_PREVENT,
-        ),
-        'clonepermissionsfrom' => 'moodle/site:manageblocks'
-    ),
-);
+        ],
+        'clonepermissionsfrom' => 'moodle/site:manageblocks',
+    ],
+];

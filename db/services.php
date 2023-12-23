@@ -23,9 +23,9 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$functions = array(
+$functions = [
     // Info: local_PLUGINNAME_FUNCTIONNAME is the name of the web service function that the client will call.
-    'block_slidefinder_get_searched_locations' => array(
+    'block_slidefinder_get_searched_locations' => [
 
         // Class containing the external function.
         'classname'     => 'block_slidefinder_external',
@@ -55,6 +55,6 @@ $functions = array(
         // Optional, only available for Moodle 3.1 onwards.
         // List of built-in services (by shortname) where the function will be included.
         // Services created manually via the Moodle interface are not supported.
-        'services'      => array()
-    )
-);
+        'services'      => [],
+    ],
+];

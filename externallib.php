@@ -37,7 +37,7 @@ class block_slidefinder_external extends external_api {
      */
     public static function get_searched_locations_parameters() {
         return new external_function_parameters(
-            array(
+            [
                 'userid' => new external_value(
                     PARAM_INT,
                     'Id of the user using the webservice',
@@ -56,8 +56,8 @@ class block_slidefinder_external extends external_api {
                 'contextlength' => new external_value(
                     PARAM_INT,
                     'Number of words surrounding the found query word in each direction'
-                )
-            )
+                ),
+            ]
         );
     }
 
@@ -67,7 +67,7 @@ class block_slidefinder_external extends external_api {
      * @param int $userid id of the user who initiates the search
      * @param int $courseid id of the course to search in
      * @param string $searchstring the string to search for
-     * @param int $contextlength the size of the context snippet on each side of the found $seach_string occurences in words
+     * @param int $contextlength the size of the context snippet on each side of the found $search_string occurences in words
      *
      * @return string json encoded array of arrays holding the 'filename', 'page_number', 'book_chapter_url' and 'context'
      * of each chapter/pdf-page the $searchterm was found
@@ -80,23 +80,21 @@ class block_slidefinder_external extends external_api {
         // Validate parameter.
         $params = self::validate_parameters(
             self::get_searched_locations_parameters(),
-            array(
+            [
                 'userid'               => $userid,
                 'courseid'             => $courseid,
                 'searchstring'         => $searchstring,
-                'contextlength'        => $contextlength
-            )
+                'contextlength'        => $contextlength,
+            ]
         );
-
-        $transaction = $DB->start_delegated_transaction();
 
         try {
             // User.
-            if (!$user = $DB->get_record('user', array('id' => $userid))) {
+            if (!$user = $DB->get_record('user', ['id' => $userid])) {
                 throw new moodle_exception(get_string('error_user_not_found', 'block_slidefinder'));
             }
             // Course.
-            if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+            if (!$course = $DB->get_record('course', ['id' => $courseid])) {
                 throw new moodle_exception(get_string('error_course_not_found', 'block_slidefinder'));
             }
             // Does the user have access to the course?
@@ -115,7 +113,7 @@ class block_slidefinder_external extends external_api {
             block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from_course($courseid, $userid);
 
         // Get Search Results & Context for PDFs.
-        $results = array();
+        $results = [];
         foreach ($chapters as $chapter) {
             $result = self::search_content($chapter, $searchstring, $contextlength);
             if ($result) {
@@ -123,7 +121,7 @@ class block_slidefinder_external extends external_api {
                     'filename' => $result->filename,
                     'page_number' => $result->page,
                     'book_chapter_url' => $result->bookurl,
-                    'context_snippet' => $result->context
+                    'context_snippet' => $result->context,
                 ];
             }
         }
@@ -151,46 +149,58 @@ class block_slidefinder_external extends external_api {
      * @return stdClass|null the given $page object with the additional $page->context or null if nothing was found
      */
     private static function search_content($page, $searchterm, $contextlength) {
-        $content = ' ' . $page->content . ' ';
+        $content = $page->content;
 
         // Is the searched word in this page?
         if (!stristr($content, $searchterm)) {
             return;
         }
 
-        // Create a String with all occurences & context.
-        $context = '';
+        // Split the text into words.
+        $words = preg_split('/\s+/', $content);
 
-        $index = self::index_of($content, $searchterm, 0);
-        $finalendindex = -1;
+        $snippets = [];
+        $snippetindex = 0;
 
-        // For all $searchterm occurances.
-        while (0 <= $index) {
-            $startindex = $index;
-            $tempendindex = $index;
+        // Iterate through the words to find occurrences of the search word.
+        // Save the context snippet indices.
+        for ($i = 0; $i < count($words); $i++) {
+            if (stristr($words[$i], $searchterm)) {
+                // Calculate start and end indices for the context.
+                $start = max(0, $i - $contextlength);
+                $end = min(count($words) - 1, $i + $contextlength);
 
-            // Get Context Words.
-            for ($i = 0; $i < $contextlength; $i++) {
-                $startindex = self::lastindex_of($content, ' ', $startindex - 1);
-                $tempendindex = self::index_of($content, ' ', $tempendindex + 1);
-                if ($tempendindex < $startindex) {
-                    $tempendindex = strlen($content) - 1;
+                if ($snippetindex > 0 && $start - $snippets[$snippetindex - 1][1] < $contextlength) {
+                    $snippets[$snippetindex - 1][1] = $end;
+                } else {
+                    $snippets[] = [$start, $end];
+                    $snippetindex++;
                 }
             }
+        }
 
-            // Do the contexti have overlap or are they apart?
-            if ($startindex > $finalendindex) {
-                $context .= '...';
-                $context .= self::substring($content, $startindex, $tempendindex);
-            } else {
-                $context .= self::substring($content, $finalendindex + 1, $tempendindex);
+        // Turn the snippet indices into actual text snippets.
+        for ($i = 0; $i < count($snippets); $i++) {
+            [$start, $end] = $snippets[$i];
+            // Extract the context around the search word.
+            $snippet = implode(' ', array_slice($words, $start, $end - $start + 1));
+
+            // Add "..." at the beginning if not at the start of the text.
+            if ($start > 0) {
+                $snippet = '...' . $snippet;
             }
 
-            // Next $searchterm occurance.
-            $finalendindex = $tempendindex;
-            $index = self::index_of($content, $searchterm, $index + 1);
+            // Add "..." at the end if not at the end of the text.
+            if ($end < count($words) - 1) {
+                $snippet .= '...';
+            }
+
+            // Update snippet with text.
+            $snippets[$i] = $snippet;
         }
-        $context .= '...';
+
+        // Create a String with all occurences & context.
+        $context = implode(' ... ', $snippets);
 
         $page->context = $context;
         return $page;
