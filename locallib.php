@@ -37,12 +37,12 @@ require_once(__DIR__ . '/pdfparser/alt_autoload.php-dist');
 function block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from_course($courseid, $userid) {
     global $DB;
 
-    $coursechapters = array();
-    $misconfiguredcoursechapters = array();
+    $coursechapters = [];
+    $misconfiguredcoursechapters = [];
 
     try {
         // Course.
-        if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+        if (!$course = $DB->get_record('course', ['id' => $courseid])) {
             throw new moodle_exception(get_string('error_course_not_found', 'block_slidefinder'));
         }
         // Does the user have access to the course?
@@ -78,7 +78,7 @@ function block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from
 function block_slidefinder_get_all_book_pdf_matches_from_course($course) {
     // Get all PDFs from course.
     $fs = get_file_storage();
-    $pdfs = array();
+    $pdfs = [];
     foreach (get_all_instances_in_course('resource', $course) as $resource) {
         // Get all resources.
         $cm = get_coursemodule_from_instance('resource', $resource->id, $resource->course, false, MUST_EXIST);
@@ -113,7 +113,7 @@ function block_slidefinder_get_all_book_pdf_matches_from_course($course) {
     }
 
     // Get all books from course.
-    $sectionedbooks = array();
+    $sectionedbooks = [];
     $books = get_all_instances_in_course('book', $course);
     foreach ($books as $book) {
         $sectionedbooks[$book->section][$book->id] =
@@ -121,7 +121,7 @@ function block_slidefinder_get_all_book_pdf_matches_from_course($course) {
     }
 
     // Get all book-PDF matches.
-    $matches = array();
+    $matches = [];
     foreach ($pdfs as $pdf) {
         if (!isset($sectionedbooks[$pdf->section])) {
             continue;
@@ -143,7 +143,7 @@ function block_slidefinder_get_all_book_pdf_matches_from_course($course) {
  * @return array list of objects containing the content and some metadata of one PDF page.
  */
 function block_slidefinder_get_content_as_chapters($match) {
-    $chapters = array();
+    $chapters = [];
 
     try {
         $fs = get_file_storage();
@@ -206,7 +206,7 @@ function block_slidefinder_get_book_chapter_url($bookid, $pagenum) {
  * @return array Array of courses the current user has access to. Position 1 is either selected course or selection message.
  */
 function block_slidefinder_select_course_options(int $cid = 0) {
-    $courses = array();
+    $courses = [];
 
     foreach (get_courses() as $course) {
         if (can_access_course($course)) {
@@ -222,7 +222,7 @@ function block_slidefinder_select_course_options(int $cid = 0) {
             }
         } catch (\Throwable $th) {
             throw $th;
-            return array();
+            return [];
         }
     } else {
         array_unshift($courses, (object)['id' => 0, 'value' => get_string('select_course', 'block_slidefinder')]);

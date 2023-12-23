@@ -37,7 +37,7 @@ class block_slidefinder_external extends external_api {
      */
     public static function get_searched_locations_parameters() {
         return new external_function_parameters(
-            array(
+            [
                 'userid' => new external_value(
                     PARAM_INT,
                     'Id of the user using the webservice',
@@ -56,8 +56,8 @@ class block_slidefinder_external extends external_api {
                 'contextlength' => new external_value(
                     PARAM_INT,
                     'Number of words surrounding the found query word in each direction'
-                )
-            )
+                ),
+            ]
         );
     }
 
@@ -80,21 +80,21 @@ class block_slidefinder_external extends external_api {
         // Validate parameter.
         $params = self::validate_parameters(
             self::get_searched_locations_parameters(),
-            array(
+            [
                 'userid'               => $userid,
                 'courseid'             => $courseid,
                 'searchstring'         => $searchstring,
-                'contextlength'        => $contextlength
-            )
+                'contextlength'        => $contextlength,
+            ]
         );
 
         try {
             // User.
-            if (!$user = $DB->get_record('user', array('id' => $userid))) {
+            if (!$user = $DB->get_record('user', ['id' => $userid])) {
                 throw new moodle_exception(get_string('error_user_not_found', 'block_slidefinder'));
             }
             // Course.
-            if (!$course = $DB->get_record('course', array('id' => $courseid))) {
+            if (!$course = $DB->get_record('course', ['id' => $courseid])) {
                 throw new moodle_exception(get_string('error_course_not_found', 'block_slidefinder'));
             }
             // Does the user have access to the course?
@@ -113,7 +113,7 @@ class block_slidefinder_external extends external_api {
             block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from_course($courseid, $userid);
 
         // Get Search Results & Context for PDFs.
-        $results = array();
+        $results = [];
         foreach ($chapters as $chapter) {
             $result = self::search_content($chapter, $searchstring, $contextlength);
             if ($result) {
@@ -121,7 +121,7 @@ class block_slidefinder_external extends external_api {
                     'filename' => $result->filename,
                     'page_number' => $result->page,
                     'book_chapter_url' => $result->bookurl,
-                    'context_snippet' => $result->context
+                    'context_snippet' => $result->context,
                 ];
             }
         }
@@ -159,23 +159,22 @@ class block_slidefinder_external extends external_api {
         // Split the text into words.
         $words = preg_split('/\s+/', $content);
 
-        $snippets =  [];
-        $snippet_index = 0;
-
+        $snippets = [];
+        $snippetindex = 0;
 
         // Iterate through the words to find occurrences of the search word.
         // Save the context snippet indices.
         for ($i = 0; $i < count($words); $i++) {
             if (stristr($words[$i], $searchterm)) {
-                // Calculate start and end indices for the context
+                // Calculate start and end indices for the context.
                 $start = max(0, $i - $contextlength);
                 $end = min(count($words) - 1, $i + $contextlength);
 
-                if ($snippet_index > 0 && $start - $snippets[$snippet_index - 1][1] < $contextlength) {
-                    $snippets[$snippet_index - 1][1] = $end;
+                if ($snippetindex > 0 && $start - $snippets[$snippetindex - 1][1] < $contextlength) {
+                    $snippets[$snippetindex - 1][1] = $end;
                 } else {
                     $snippets[] = [$start, $end];
-                    $snippet_index++;
+                    $snippetindex++;
                 }
             }
         }
