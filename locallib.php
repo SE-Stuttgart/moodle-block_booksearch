@@ -37,7 +37,9 @@ require_once(__DIR__ . '/pdfparser/alt_autoload.php-dist');
 function block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from_course($courseid, $userid) {
     global $DB;
 
+    // Array of pdf_chapter metadata and content of all book to pdf matches in the given course.
     $coursechapters = [];
+    // Array of pdf_chapter metadata of all book to pdf matches with some misconfigurations in the given course.
     $misconfiguredcoursechapters = [];
 
     try {
@@ -54,12 +56,14 @@ function block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from
         return [$coursechapters, $misconfiguredcoursechapters];
     }
 
+    // Get the Book to Pdf matches that exist. Array of metadata for each match.
     $matches = block_slidefinder_get_all_book_pdf_matches_from_course($course);
 
     foreach ($matches as $match) {
-        $matchchapters = block_slidefinder_get_content_as_chapters($match);
-        if (!is_null($matchchapters) && !empty($matchchapters)) {
-            $coursechapters = array_merge($coursechapters, $matchchapters);
+        // Split each pdf metadata into pdf_chapter metadata. Add the chapter content.
+        $matchedchapters = block_slidefinder_get_content_as_chapters($match);
+        if (!is_null($matchedchapters) && !empty($matchedchapters)) {
+            $coursechapters = array_merge($coursechapters, $matchedchapters);
         } else {
             $misconfiguredcoursechapters[] = $match->filename;
         }

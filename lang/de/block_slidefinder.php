@@ -38,8 +38,8 @@ $string['search'] = 'Suche...';
 $string['select_course'] = 'Wähle Kurs...';
 
 // Capabilities.
-$string['block_slidefinder:myaddinstance'] = 'Füge einen neuen Foliensuche Block zu meinem Moodle Dashboard hinzu';
-$string['block_slidefinder:addinstance'] = 'Füge einen neuen Foliensuche Block zu dieser Seite hinzu';
+$string['slidefinder:myaddinstance'] = 'Füge einen neuen Foliensuche Block zu meinem Moodle Dashboard hinzu';
+$string['slidefinder:addinstance'] = 'Füge einen neuen Foliensuche Block zu dieser Seite hinzu';
 
 // Error.
 $string['error_message'] = 'Es ist ein Problem aufgetreten. '
