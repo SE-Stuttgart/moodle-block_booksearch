@@ -109,19 +109,24 @@ class block_slidefinder_external extends external_api {
         $coursecontext = context_course::instance($course->id);
         self::validate_context($coursecontext);
 
-        [$chapters, $misconfiguredchapters] =
-            block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from_course($courseid, $userid);
+        // Get all searchable content.
+        [$sections, $_] = block_slidefinder_get_all_content_of_course_as_sections_with_metadata($courseid, $userid);
 
         // Get Search Results & Context for PDFs.
+        $data = [];
+        foreach ($sections as $section) {
+            $data = self::search_content($data, $section, $searchstring, $contextlength);
+        }
+
+        // Format results.
         $results = [];
-        foreach ($chapters as $chapter) {
-            $result = self::search_content($chapter, $searchstring, $contextlength);
-            if ($result) {
+        foreach ($data as $file) {
+            foreach ($file as $chapter) {
                 $results[] = [
-                    'filename' => $result->filename,
-                    'page_number' => $result->page,
-                    'book_chapter_url' => $result->bookurl,
-                    'context_snippet' => $result->context,
+                    'filename' => $chapter->filename,
+                    'page_number' => $chapter->page,
+                    'book_chapter_url' => $chapter->bookurl,
+                    'context_snippet' => $chapter->context,
                 ];
             }
         }
@@ -131,7 +136,7 @@ class block_slidefinder_external extends external_api {
     }
 
     /**
-     * Returns description of the method return values
+     * Returns description of the method return values.
      * @return external_value
      */
     public static function get_searched_locations_returns() {
@@ -139,21 +144,21 @@ class block_slidefinder_external extends external_api {
     }
 
     /**
-     * Searches for the $searchterm in the given $page->content and
-     * returns the page with a $page->context context snippet if it was found. returns null if not.
+     * Searches for the $searchterm in the given $section->content and populates the given $results array.
      *
-     * @param stdClass $page object that holds the $page->content and gets returned containing the $page->context
-     * @param string $searchterm the string to seach for in the $page->content
-     * @param int $contextlength word count returned as context snippet on each side of the found $searchterm
+     * @param array $results the results so far.
+     * @param stdClass $section object that holds the $section->content.
+     * @param string $searchterm the string to seach for in the $section->content.
+     * @param int $contextlength word count returned as context snippet on each side of the found $searchterm.
      *
-     * @return stdClass|null the given $page object with the additional $page->context or null if nothing was found
+     * @return array $results returns the updated $results array with the new data.
      */
-    private static function search_content($page, $searchterm, $contextlength) {
-        $content = $page->content;
+    private static function search_content($results, $section, $searchterm, $contextlength) {
+        $content = $section->content;
 
-        // Is the searched word in this page?
+        // Is the searched word in this section?
         if (!stristr($content, $searchterm)) {
-            return;
+            return $results;
         }
 
         // Split the text into words.
@@ -201,9 +206,18 @@ class block_slidefinder_external extends external_api {
 
         // Create a String with all occurences & context.
         $context = implode(' ... ', $snippets);
+        $section->context = $context;
 
-        $page->context = $context;
-        return $page;
+        if (!array_key_exists($section->filename, $results)) {
+            $results[$section->filename] = [];
+        }
+        if (!array_key_exists($section->page, $results[$section->filename])) {
+            $results[$section->filename][$section->page] = $section;
+        } else {
+            $results[$section->filename][$section->page]->context .= " ... " . $section->context;
+        }
+
+        return $results;
     }
 
     /**

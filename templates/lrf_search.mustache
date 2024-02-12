@@ -110,17 +110,18 @@
         }
 
         /**
-        * searches one pdf-page/book-chapter using the lrf_search_term and if found ads it with context to lrf_searched_content
-        * @param {*} page
+        * searches one section of pdf-page/book-chapter.
+        * using the lrf_search_term and if found ads it with context to lrf_searched_content.
+        * @param {*} section
         */
-        function lrfSearchContent(page) {
-            // Is the searched word in this page?
-            if (!page.content.toLowerCase().includes(lrf_search_term.toLowerCase())) {
+        function lrfSearchContent(section) {
+            // Is the searched word in this section?
+            if (!section.content.toLowerCase().includes(lrf_search_term.toLowerCase())) {
                 return;
             }
 
             // Split the text into words.
-            let words = page.content.split(/\s+/);
+            let words = section.content.split(/\s+/);
 
             let snippets = [];
             let snippetIndex = 0;
@@ -164,12 +165,19 @@
             
             // Create a string with all occurrences & context.
             let context = snippets.join(' ... ');
-
-            page.context = context;
-            if (!(page.filename in lrf_searched_content)) {
-                lrf_searched_content[page.filename] = [];
+            section.context = context;
+            
+            // Create new file entry in results if it does not exist.
+            if (!(section.filename in lrf_searched_content)) {
+                lrf_searched_content[section.filename] = [];
             }
-            lrf_searched_content[page.filename][page.page] = page;
+
+            // Set chapter entry as section or add section context to existing chapter entry.
+            if (!(section.page in lrf_searched_content[section.filename])) {
+                lrf_searched_content[section.filename][section.page] = section;
+            } else {
+                lrf_searched_content[section.filename][section.page].context += " ... " + section.context; 
+            }
         }
 
         /**

@@ -103,9 +103,10 @@ class block_slidefinder extends block_base {
                 }
             }
 
+            // data[0] = array([section, filename, page, bookurl, size, content]).
             $data = [[], []];
             if (!is_null($course)) {
-                $data = block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from_course($course->id, $USER->id);
+                $data = block_slidefinder_get_all_content_of_course_as_sections_with_metadata($course->id, $USER->id);
                 if (!empty($data[1])) {
                     $footer .= get_string('misconfigured_info', get_class($this));
                     foreach ($data[1] as $key => $value) {

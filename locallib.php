@@ -21,26 +21,43 @@
  * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
+use core_reportbuilder\external\reports\retrieve;
+
 defined('MOODLE_INTERNAL') || die();
 
 require_once(__DIR__ . '/pdfparser/alt_autoload.php-dist');
 
 /**
- * Return the content & link of all chapters that are part of an eliganble book-pdf match in the given course.
+ * Return the content for all elligable Book to Pdf matches.
+ * 
+ * Return[0]:
+ * The content is returned in sections.
+ * A section is a sentece or part of the Pdf that fits together.
+ * Each section contains the content as text and some metadata.
+ * The metadata is: 
+ *  - section: The moodle course section this pdf/book match appears on.
+ *  - filename: The name of the Pdf this section appears on.
+ *  - page: The page number this section appears on.
+ *  - bookurl: The url linking to the matching book-chapter this section appears on.
+ *  - text: The text content of this section.
+ * 
+ * Return[1]:
+ * Additionally returns a list of filenames that are intended to match to a book but have an error in the setup.
  *
  * @param int $courseid ID of the course to be searched
  * @param int $userid ID of the user initiating the search
  *
- * @return array [0] list of chapters (content, link, other metadata). One chapter for each eligable book chaper in course.
+ * @return array [0] list of logical sections of content (section, filename, page, bookurl, text).
  * @return array [1] list of filenames of intended eligable pairs that have a problem
  */
-function block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from_course($courseid, $userid) {
+function block_slidefinder_get_all_content_of_course_as_sections_with_metadata($courseid, $userid) {
     global $DB;
 
     // Array of pdf_chapter metadata and content of all book to pdf matches in the given course.
-    $coursechapters = [];
+    $sections = [];
     // Array of pdf_chapter metadata of all book to pdf matches with some misconfigurations in the given course.
-    $misconfiguredcoursechapters = [];
+    $misconfiguredmatches = [];
 
     try {
         // Course.
@@ -53,23 +70,35 @@ function block_slidefinder_get_content_as_chapters_for_all_book_pdf_matches_from
         }
     } catch (\Throwable $th) {
         debugging($th);
-        return [$coursechapters, $misconfiguredcoursechapters];
+        return [$sections, $misconfiguredmatches];
     }
 
-    // Get the Book to Pdf matches that exist. Array of metadata for each match.
-    $matches = block_slidefinder_get_all_book_pdf_matches_from_course($course);
+    try {
+        // Get the Book to Pdf matches that exist. Array of metadata for each match.
+        $matches = block_slidefinder_get_all_book_pdf_matches_from_course($course);
+    } catch (\Throwable $th) {
+        debugging($th);
+        gc_collect_cycles();
+        return [$sections, $misconfiguredmatches];
+    }
 
     foreach ($matches as $match) {
-        // Split each pdf metadata into pdf_chapter metadata. Add the chapter content.
-        $matchedchapters = block_slidefinder_get_content_as_chapters($match);
-        if (!is_null($matchedchapters) && !empty($matchedchapters)) {
-            $coursechapters = array_merge($coursechapters, $matchedchapters);
-        } else {
-            $misconfiguredcoursechapters[] = $match->filename;
+        try {
+            // Split each pdf content into logical sections containing text and metadata.
+            $pagesections = block_slidefinder_get_content_as_sections($match);
+            if (!is_null($pagesections) && !empty($pagesections)) {
+                $sections = array_merge($sections, $pagesections);
+            } else {
+                $misconfiguredmatches[] = $match->filename;
+            }
+        } catch (\Throwable $th) {
+            debugging($th);
+            $misconfiguredmatches[] = $match->filename;
+            gc_collect_cycles();
         }
     }
 
-    return [$coursechapters, $misconfiguredcoursechapters];
+    return [$sections, $misconfiguredmatches];
 }
 
 /**
@@ -140,48 +169,158 @@ function block_slidefinder_get_all_book_pdf_matches_from_course($course) {
 }
 
 /**
- * Return an array of objects each containing the content and some metadata of one PDF page of a given pdf-book match.
+ * Return an array of logical sections based on each page of the given pdf/book match.
+ * A section is a sentece or part of the Pdf page that fits together.
+ * Each section contains the content as text and some metadata.
+ * The metadata is: 
+ *  - section: The moodle course section this pdf/book match appears on.
+ *  - filename: The name of the Pdf this section appears on.
+ *  - page: The page number this section appears on.
+ *  - bookurl: The url linking to the matching book-chapter this section appears on.
+ *  - text: The text content of this section.
  *
  * @param mixed $match an object containing metadata of one pdf-book match.
  *
- * @return array list of objects containing the content and some metadata of one PDF page.
+ * @return array list of logical sections of content (section, filename, page, bookurl, text).
  */
-function block_slidefinder_get_content_as_chapters($match) {
-    $chapters = [];
+function block_slidefinder_get_content_as_sections($match) {
+    $sections = [];
 
-    try {
-        $fs = get_file_storage();
+    $fs = get_file_storage();
 
-        $config = new \Smalot\PdfParser\Config();
-        $config->setHorizontalOffset('');
-        $pdfparser = new \Smalot\PdfParser\Parser([], $config);
+    $config = new \Smalot\PdfParser\Config();
+    $config->setRetainImageContent(false);
+    $config->setHorizontalOffset('');
+    $config->setFontSpaceLimit(-600);
+    $pdfparser = new \Smalot\PdfParser\Parser([], $config);
 
-        $file = $fs->get_file_by_hash($match->pathnamehash);
-        if ($file->get_mimetype() != 'application/pdf') {
-            return $chapters;
+    $file = $fs->get_file_by_hash($match->pathnamehash);
+    if ($file->get_mimetype() != 'application/pdf') {
+        return $sections;
+    }
+
+    $pdf = $pdfparser->parseContent($file->get_content());
+    gc_collect_cycles();
+
+    // Create a list of pages, where each page is a combination of match and pdf metadata for one pdf page.
+    $pages = block_slidefinder_get_pdf_metadata_as_pages($pdf, $match);
+
+    // Split the list of pages (with metadata) into smaller logical sections containing metadata and text content.
+    foreach ($pages as $page) {
+        $sections = array_merge($sections, block_slidefinder_get_page_as_sections_with_content($page));
+    }
+
+    $test = [];
+    foreach ($sections as $value) {
+        $test[] = $value->content;
+    }
+    // debugging(print_r($test, true));
+
+    gc_collect_cycles();
+    return $sections;
+}
+
+/**
+ * Create a list of pages with metadata from a given match and parsed pdf.
+ * 
+ * @param mixed $pdf object containing the parsed information (content and metadata) of the pdf.
+ * @param mixed $match object containing metadata of the book/pdf match.
+ * 
+ * @return array of pages, each with metadata combined from match and parsed pdf and representing one pdf page.
+ */
+function block_slidefinder_get_pdf_metadata_as_pages($pdf, $match) {
+    $pages = [];
+    $pdfdetails = $pdf->getDetails();
+
+    for ($i = 0; $i < $pdfdetails['Pages']; $i++) {
+        $page = new stdClass();
+        $page->section = $match->section;
+        $page->filename = str_replace('.pdf', get_string('pdf_replace', 'block_slidefinder'), $match->filename);
+        $page->page = $i + 1;
+        $page->bookurl = block_slidefinder_get_book_chapter_url($match->bookid, $i + 1);
+        $page->content = $pdf->getPages()[$i];
+        $pages[] = $page;
+    }
+
+    return $pages;
+}
+
+/**
+ * Split a page (with metadata) into smaller logical sections containing metadata and text content.
+ */
+function block_slidefinder_get_page_as_sections_with_content($page) {
+    $sections = [];
+
+    // List of subsections/subsentences of text with metadata like size.
+    $subsections = block_slidefinder_get_sub_sections_from_page($page);
+    gc_collect_cycles();
+
+    $currentsection = null;
+
+    foreach ($subsections as $subsection) {
+        $isseperator = block_slidefinder_text_is_seperator($subsection->content);
+        if (is_null($currentsection)) {
+            if (!$isseperator) {
+                $currentsection = $subsection;
+            }
+            continue;
         }
-
-        $pdf = $pdfparser->parseContent($file->get_content());
-        $pdfdetails = $pdf->getDetails();
-        $pages = $pdf->getPages();
-
-        for ($i = 0; $i < $pdfdetails['Pages']; $i++) {
-            $chapter = new stdClass();
-            $chapter->filename = str_replace('.pdf', get_string('pdf_replace', 'block_slidefinder'), $match->filename);
-            $chapter->section = $match->section;
-            $chapter->page = $i + 1;
-            $chapter->content = $pages[$i]->getText();
-            $chapter->bookurl = block_slidefinder_get_book_chapter_url($match->bookid, $i + 1);
-            $chapters[] = $chapter;
+        if ($isseperator) {
+            $sections[] = $currentsection;
+            $currentsection = null;
+            continue;
         }
-    } catch (\Throwable $th) {
-        gc_collect_cycles();
-        debugging($th);
-        return null;
+        if ($currentsection->size !== $subsection->size) {
+            $sections[] = $currentsection;
+            $currentsection = $subsection;
+            continue;
+        }
+        // The current section and current subsection belong together.
+        $currentsection->content .= " " . $subsection->content;
+    }
+    if (!is_null($currentsection)) {
+        $sections[] = $currentsection;
+        $currentsection = null;
     }
 
     gc_collect_cycles();
-    return $chapters;
+    return $sections;
+}
+
+/**
+ * For a given parsed pdf document. Create a list of subsections/subsentences of text with metadata like size.
+ * 
+ * @param mixed $page document of a parsed pdf.
+ * 
+ * @return array list of subsections/subsentences of text with metadata like size for the given page.
+ */
+function block_slidefinder_get_sub_sections_from_page($page) {
+    // Subsections do no longer contain the end of a sentence inside the text.
+    $subsections = [];
+    $endofsentencepattern = '/(?<=[.?!;:])\s+/';
+
+    // Get pdf content as lines with metadata: [0]: Metadata, [1]: Text.
+    $lines = $page->content->getDataTm();
+
+    foreach ($lines as $line) {
+        $subsection = new stdClass();
+        $subsection->section = $page->section;
+        $subsection->filename = $page->filename;
+        $subsection->page = $page->page;
+        $subsection->bookurl = $page->bookurl;
+        $subsection->size = array_slice($line[0], 0, 4);
+
+        // Split the line into subsections.
+        $subtexts = preg_split($endofsentencepattern, $line[1], -1, PREG_SPLIT_NO_EMPTY | PREG_SPLIT_DELIM_CAPTURE);
+
+        foreach ($subtexts as $text) {
+            $subsection->content = $text;
+            $subsections[] = $subsection;
+        }
+    }
+
+    gc_collect_cycles();
+    return $subsections;
 }
 
 /**
@@ -202,6 +341,17 @@ function block_slidefinder_get_book_chapter_url($bookid, $pagenum) {
     $url = new moodle_url('/mod/book/view.php', ['id' => $cmid, 'chapterid' => $chapterid]);
 
     return $url->out(false);
+}
+
+/**
+ * Checks if the given text counts as a seperator.
+ * 
+ * @param string $text given text to check.
+ * 
+ * @return bool true if it is a seperator.
+ */
+function block_slidefinder_text_is_seperator($text) {
+    return strlen($text) <= 2;
 }
 
 /**
