@@ -103,7 +103,7 @@ class block_slidefinder extends block_base {
                 }
             }
 
-            // data[0] = array([section, filename, page, bookurl, size, content]).
+            // Info: data[0] = array([section, filename, page, bookurl, size, content]).
             $data = [[], []];
             if (!is_null($course)) {
                 $data = block_slidefinder_get_all_content_of_course_as_sections_with_metadata($course->id, $USER->id);

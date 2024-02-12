@@ -30,18 +30,18 @@ require_once(__DIR__ . '/pdfparser/alt_autoload.php-dist');
 
 /**
  * Return the content for all elligable Book to Pdf matches.
- * 
+ *
  * Return[0]:
  * The content is returned in sections.
  * A section is a sentece or part of the Pdf that fits together.
  * Each section contains the content as text and some metadata.
- * The metadata is: 
+ * The metadata is:
  *  - section: The moodle course section this pdf/book match appears on.
  *  - filename: The name of the Pdf this section appears on.
  *  - page: The page number this section appears on.
  *  - bookurl: The url linking to the matching book-chapter this section appears on.
  *  - text: The text content of this section.
- * 
+ *
  * Return[1]:
  * Additionally returns a list of filenames that are intended to match to a book but have an error in the setup.
  *
@@ -210,22 +210,16 @@ function block_slidefinder_get_content_as_sections($match) {
         $sections = array_merge($sections, block_slidefinder_get_page_as_sections_with_content($page));
     }
 
-    $test = [];
-    foreach ($sections as $value) {
-        $test[] = $value->content;
-    }
-    // debugging(print_r($test, true));
-
     gc_collect_cycles();
     return $sections;
 }
 
 /**
  * Create a list of pages with metadata from a given match and parsed pdf.
- * 
+ *
  * @param mixed $pdf object containing the parsed information (content and metadata) of the pdf.
  * @param mixed $match object containing metadata of the book/pdf match.
- * 
+ *
  * @return array of pages, each with metadata combined from match and parsed pdf and representing one pdf page.
  */
 function block_slidefinder_get_pdf_metadata_as_pages($pdf, $match) {
@@ -247,6 +241,10 @@ function block_slidefinder_get_pdf_metadata_as_pages($pdf, $match) {
 
 /**
  * Split a page (with metadata) into smaller logical sections containing metadata and text content.
+ *
+ * @param mixed $page The page to be split.
+ *
+ * @return array The given page split into smaller sections (with metadata).
  */
 function block_slidefinder_get_page_as_sections_with_content($page) {
     $sections = [];
@@ -289,9 +287,9 @@ function block_slidefinder_get_page_as_sections_with_content($page) {
 
 /**
  * For a given parsed pdf document. Create a list of subsections/subsentences of text with metadata like size.
- * 
+ *
  * @param mixed $page document of a parsed pdf.
- * 
+ *
  * @return array list of subsections/subsentences of text with metadata like size for the given page.
  */
 function block_slidefinder_get_sub_sections_from_page($page) {
@@ -345,9 +343,9 @@ function block_slidefinder_get_book_chapter_url($bookid, $pagenum) {
 
 /**
  * Checks if the given text counts as a seperator.
- * 
+ *
  * @param string $text given text to check.
- * 
+ *
  * @return bool true if it is a seperator.
  */
 function block_slidefinder_text_is_seperator($text) {

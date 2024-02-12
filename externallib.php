@@ -110,7 +110,7 @@ class block_slidefinder_external extends external_api {
         self::validate_context($coursecontext);
 
         // Get all searchable content.
-        [$sections, $_] = block_slidefinder_get_all_content_of_course_as_sections_with_metadata($courseid, $userid);
+        $sections = block_slidefinder_get_all_content_of_course_as_sections_with_metadata($courseid, $userid)[0];
 
         // Get Search Results & Context for PDFs.
         $data = [];
