@@ -172,7 +172,7 @@ function block_slidefinder_get_all_book_pdf_matches_from_course($course) {
  * Return an array of logical sections based on each page of the given pdf/book match.
  * A section is a sentece or part of the Pdf page that fits together.
  * Each section contains the content as text and some metadata.
- * The metadata is: 
+ * The metadata is:
  *  - section: The moodle course section this pdf/book match appears on.
  *  - filename: The name of the Pdf this section appears on.
  *  - page: The page number this section appears on.
