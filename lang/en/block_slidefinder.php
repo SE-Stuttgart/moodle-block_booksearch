@@ -39,8 +39,8 @@ $string['search'] = 'Search keyword...';
 $string['select_course'] = 'Select course...';
 
 // Capabilities.
-$string['block_slidefinder:myaddinstance'] = 'Add a new slide finder block to my moodle Dashboard.';
-$string['block_slidefinder:addinstance'] = 'Add a new slide finder block to this page.';
+$string['slidefinder:myaddinstance'] = 'Add a new slide finder block to my moodle Dashboard.';
+$string['slidefinder:addinstance'] = 'Add a new slide finder block to this page.';
 
 // Error.
 $string['error_message'] = 'There was a problem. Please contact the Plugin creator and send him the error. This is the error:';
