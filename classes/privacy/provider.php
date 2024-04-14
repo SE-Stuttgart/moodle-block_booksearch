@@ -15,16 +15,26 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Version Details
+ * Privacy Information
  *
  * @package    block_slidefinder
  * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2024041405;  // The current plugin version (Date: YYYYMMDDHH).
-$plugin->requires  = 2020061510;  // Requires this Moodle version.
-$plugin->component = 'block_slidefinder';  // Full name of the plugin (used for diagnostics).
-$plugin->release = '1.1.1';
-$plugin->maturity = MATURITY_STABLE;
+namespace block_slidefinder\privacy;
+
+class provider implements
+    // This plugin does not store any personal user data.
+    \core_privacy\local\metadata\null_provider {
+
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason(): string {
+        return 'privacy:metadata';
+    }
+}

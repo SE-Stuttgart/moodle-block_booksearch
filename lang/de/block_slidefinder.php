@@ -25,6 +25,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // Config.
 $string['pluginname'] = 'Foliensuche';
+$string['privacy:metadata'] = 'Der Slidefinder-Block zeigt an bzw. gibt zurück nur bereits vorhandene Buch-/Pdf-Daten.';
 
 // Block.
 $string['search_term'] = 'Gesucht: ';

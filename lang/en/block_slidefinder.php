@@ -26,6 +26,7 @@ defined('MOODLE_INTERNAL') || die();
 
 // Config.
 $string['pluginname'] = 'Slide finder';
+$string['privacy:metadata'] = 'The Slidefinder block only displays/returns and links to existing book/pdf data.';
 
 // Block.
 $string['search_term'] = 'Search term: ';
