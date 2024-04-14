@@ -52,19 +52,19 @@ This involves the following steps:
 5. Select a service: Add the "Slide Finder" to custom services.
 6. Add functions: Add the "block_slidefinder_get_searched_locations" function to the "Slide Finder" service.
 7. Select a specific user: Add the web services user as an authorised user.
-8. The authorized user has to be enrolled into the course you want to search for slides.
-9. The authorized & enrolled user needs the tights to access the course content.
-10. Create a token for a user: Create a token for the web services user.
+8. The authorized user needs the rights to access the course content.
+9. Create a token for a user: Create a token for the web services user.
 
 
 Test it by sending an http GET request to
-'http://[yourmoodle]/webservice/rest/server.php?wstoken=[user-token]&wsfunction=block_slidefinder_get_searched_locations&moodlewsrestformat=json&search_string=[search_string]&course_id=[course_id]&context_length=[context_length]'
+'http://[yourmoodle]/webservice/rest/server.php?wstoken=[user_token]&wsfunction=block_slidefinder_get_searched_locations&moodlewsrestformat=json&userid=[user_id]&courseid=[course_id]&searchstring=[search_string]&contextlength=[context_length]'
 where
 - yourmoodle: domain of your moodle installation (as developer: probably localhost)
-- user-token: token received from moodle for a user which is allowed to use the web service
-- search_string: the search string which is used to search in moodle books and pdfs
-- course_id: the id of the course the string is searched in
-- context_length: the number of word before and after each found string
+- user_token: token received from moodle for a user which is allowed to use the web service.
+- user_id: the id of the user that wants to access the webservice (This user needs to have access to the course content).
+- course_id: the id of the course the string is searched in.
+- search_string: the search string which is used to search in moodle books and pdfs.
+- context_length: the number of word before and after each found string.
 
 You should get a response with your search results in the JSON format.
 

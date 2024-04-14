@@ -97,8 +97,8 @@ class block_slidefinder_external extends external_api {
             if (!$course = $DB->get_record('course', ['id' => $courseid])) {
                 throw new moodle_exception(get_string('error_course_not_found', 'block_slidefinder'));
             }
-            // Does the user have access to the course?
-            if (!can_access_course($course, $user)) {
+            // Does the webservice and user have access to the course?
+            if (!can_access_course($course) && !can_access_course($course, $user)) {
                 throw new moodle_exception(get_string('error_course_access_denied', 'block_slidefinder'));
             }
         } catch (\Throwable $th) {
