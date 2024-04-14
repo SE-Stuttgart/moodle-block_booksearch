@@ -52,7 +52,10 @@ This involves the following steps:
 5. Select a service: Add the "Slide Finder" to custom services.
 6. Add functions: Add the "block_slidefinder_get_searched_locations" function to the "Slide Finder" service.
 7. Select a specific user: Add the web services user as an authorised user.
-8. Create a token for a user: Create a token for the web services user.
+8. The authorized user has to be enrolled into the course you want to search for slides.
+9. The authorized & enrolled user needs the tights to access the course content.
+10. Create a token for a user: Create a token for the web services user.
+
 
 Test it by sending an http GET request to
 'http://[yourmoodle]/webservice/rest/server.php?wstoken=[user-token]&wsfunction=block_slidefinder_get_searched_locations&moodlewsrestformat=json&search_string=[search_string]&course_id=[course_id]&context_length=[context_length]'
