@@ -24,7 +24,6 @@
         "action": "https://moodle.local/admin/search.php",
         "course_selector_param_name": "lrf_cid",
         "course_selector_options": [{"id": 3, "value": "VALUE"}],
-        "hidden_params":[{"name": "cache", "value": 1}]
     }
 }}
 <div class="simplesearchform">
@@ -46,7 +45,6 @@
         >
             {{#course_selector_options}} <option value="{{id}}">{{value}}</option>{{/course_selector_options}}
         </select>
-        {{#hidden_params}} <input type="hidden" name="{{name}}" value="{{value}}">{{/hidden_params}}
     </div>
 
     {{^inform}}
