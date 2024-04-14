@@ -30,7 +30,7 @@ $string['pluginname'] = 'Slide finder';
 // Block.
 $string['search_term'] = 'Search term: ';
 $string['chapter'] = 'Chapter';
-$string['misconfigured_info'] = "The following files are flagged as matching but have not been set up correctly. 
+$string['misconfigured_info'] = "The following files are flagged as matching but have not been set up correctly.
 Maybe there is a chapter count mismatch between book and pdf?";
 $string['pdf_replace'] = ' (Book)';
 
