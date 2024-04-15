@@ -1,4 +1,4 @@
-# Slide Finder #
+# Book Search #
 
 
 ## English Description
@@ -11,7 +11,7 @@ The plugin searches all PDFs for the text and then displays the search results a
 
 The search function is available if a corresponding block is configured (see below). Alternatively, the function may be reached using a web service. The configuration of the web service is also described below.
 
-More details on functionality and configuration of this plugin can be found in the [Wiki](https://github.com/SE-Stuttgart/kib3_moodleplugin_slidefinder/wiki).
+More details on functionality and configuration of this plugin can be found in the [Wiki](https://github.com/SE-Stuttgart/kib3_moodleplugin_booksearch/wiki).
 
 ## German Description
 
@@ -21,7 +21,7 @@ Das Plugin sucht in allen PDFs nach den Begriffen und zeigt die Resultate als ei
 
 Die Suchfunktion steht zur Verfügung, wenn man einen entsprechenden Block konfiguriert (s.u.). Alternativ kann sie über einen Webservice erreicht werden. Die Konfiguration des Web Service ist ebenfalls unten beschrieben.
 
-Mehr Informationen zu den Funktionen und zur Konfiguration des Plugins sind im [Wiki](https://github.com/SE-Stuttgart/kib3_moodleplugin_slidefinder/wiki) zu finden.
+Mehr Informationen zu den Funktionen und zur Konfiguration des Plugins sind im [Wiki](https://github.com/SE-Stuttgart/kib3_moodleplugin_booksearch/wiki) zu finden.
 
 
 # Usage and API Configuration
@@ -29,7 +29,7 @@ Mehr Informationen zu den Funktionen und zur Konfiguration des Plugins sind im [
 ### Type: Block
 Add a block to either your dashboard or a course.
 You can add a block by turning on "edit mode" and then pressing "add a block" on the right side of the user interface.
-Then you can select "Slide Finder" to add the block.
+Then you can select "Book Search" to add the block.
 
 ### Course Selection
 If you are on your dashboard, you will have to first select the course you want to search in (this will trigger a site reload) using a dropdown menu.
@@ -49,13 +49,13 @@ This involves the following steps:
 2. Enable protocols: Here, enable the REST protocol if not already enabled.
 3. Create a new specific user.
 4. Check user capability: The specified user has to have at least the __webservice/rest:use__ capability. If the user does not have the permission, you can add the permission to a role and then add the user to that role.
-5. Select a service: Add the "Slide Finder" to custom services.
-6. Add functions: Add the "block_slidefinder_get_searched_locations" function to the "Slide Finder" service.
+5. Select a service: Add the "Book Search" to custom services.
+6. Add functions: Add the "block_booksearch_get_searched_locations" function to the "Book Search" service.
 7. Select a specific user: Add the web services user as an authorised user.
 8. Create a token for a user: Create a token for the web services user.
 
 Test it by sending an http GET request to
-'http://[yourmoodle]/webservice/rest/server.php?wstoken=[user-token]&wsfunction=block_slidefinder_get_searched_locations&moodlewsrestformat=json&search_string=[search_string]&course_id=[course_id]&context_length=[context_length]'
+'http://[yourmoodle]/webservice/rest/server.php?wstoken=[user-token]&wsfunction=block_booksearch_get_searched_locations&moodlewsrestformat=json&search_string=[search_string]&course_id=[course_id]&context_length=[context_length]'
 where
 - yourmoodle: domain of your moodle installation (as developer: probably localhost)
 - user-token: token received from moodle for a user which is allowed to use the web service
@@ -78,7 +78,7 @@ You should get a response with your search results in the JSON format.
 
 The plugin can be also installed by putting the contents of this directory to
 
-    {your/moodle/dirroot}/blocks/slidefinder
+    {your/moodle/dirroot}/blocks/booksearch
 
 Afterwards, log in to your Moodle site as an admin and go to _Site administration >
 Notifications_ to complete the installation.
@@ -90,7 +90,7 @@ Alternatively, you can run
 to complete the installation from the command line.
 
 ## Third-party APIs ##
-Slide Finder plug-in relies on [pdfparser](https://github.com/smalot/pdfparser) package to extract data from PDF files. Pdfparser is a standalone PHP package under LGPLv3 license (see above: [thirdpartylibs.xml](https://github.com/SE-Stuttgart/kib3_moodleplugin_slidefinder/blob/main/thirdpartylibs.xml) for more details).
+Book Search plug-in relies on [pdfparser](https://github.com/smalot/pdfparser) package to extract data from PDF files. Pdfparser is a standalone PHP package under LGPLv3 license (see above: [thirdpartylibs.xml](https://github.com/SE-Stuttgart/kib3_moodleplugin_booksearch/blob/main/thirdpartylibs.xml) for more details).
 
 ## License ##
 
