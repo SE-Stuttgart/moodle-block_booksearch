@@ -17,15 +17,15 @@
 /**
  * Language settings german.
  *
- * @package    block_slidefinder
+ * @package    block_booksearch
  * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
 // Config.
-$string['pluginname'] = 'Foliensuche';
-$string['privacy:metadata'] = 'Der Slidefinder-Block zeigt an bzw. gibt zurück nur bereits vorhandene Buch-/Pdf-Daten.';
+$string['pluginname'] = 'Buchsuche';
+$string['privacy:metadata'] = 'Der Booksearch-Block zeigt an bzw. gibt zurück nur bereits vorhandene Buch-/Pdf-Daten.';
 
 // Block.
 $string['search_term'] = 'Gesucht: ';
@@ -39,8 +39,8 @@ $string['search'] = 'Suche...';
 $string['select_course'] = 'Wähle Kurs...';
 
 // Capabilities.
-$string['slidefinder:myaddinstance'] = 'Füge einen neuen Foliensuche Block zu meinem Moodle Dashboard hinzu';
-$string['slidefinder:addinstance'] = 'Füge einen neuen Foliensuche Block zu dieser Seite hinzu';
+$string['booksearch:myaddinstance'] = 'Füge einen neuen Buchsuche Block zu meinem Moodle Dashboard hinzu';
+$string['booksearch:addinstance'] = 'Füge einen neuen Buchsuche Block zu dieser Seite hinzu';
 
 // Error.
 $string['error_message'] = "Es ist ein Problem aufgetreten.

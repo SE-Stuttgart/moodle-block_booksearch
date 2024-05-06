@@ -17,12 +17,12 @@
 /**
  * Privacy Information
  *
- * @package    block_slidefinder
+ * @package    block_booksearch
  * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_slidefinder\privacy;
+namespace block_booksearch\privacy;
 
 /**
  * This class provides information to the user about how their personal data is handled.

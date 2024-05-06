@@ -17,7 +17,7 @@
 /**
  * Language settings english.
  *
- * @package    block_slidefinder
+ * @package    block_booksearch
  * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,8 +25,8 @@
 defined('MOODLE_INTERNAL') || die();
 
 // Config.
-$string['pluginname'] = 'Slide finder';
-$string['privacy:metadata'] = 'The Slidefinder block only displays/returns and links to existing book/pdf data.';
+$string['pluginname'] = 'Booksearch';
+$string['privacy:metadata'] = 'The Booksearch block only displays/returns and links to existing book/pdf data.';
 
 // Block.
 $string['search_term'] = 'Search term: ';
@@ -40,8 +40,8 @@ $string['search'] = 'Search keyword...';
 $string['select_course'] = 'Select course...';
 
 // Capabilities.
-$string['slidefinder:myaddinstance'] = 'Add a new slide finder block to my moodle Dashboard.';
-$string['slidefinder:addinstance'] = 'Add a new slide finder block to this page.';
+$string['booksearch:myaddinstance'] = 'Add a new booksearch block to my moodle Dashboard.';
+$string['booksearch:addinstance'] = 'Add a new booksearch block to this page.';
 
 // Error.
 $string['error_message'] = 'There was a problem. Please contact the Plugin creator and send him the error. This is the error:';

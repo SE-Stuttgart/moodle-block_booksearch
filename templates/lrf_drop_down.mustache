@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_slidefinder/lrf_drop_down
+    @template block_booksearch/lrf_drop_down
 
     Complex Lecture Search
 
@@ -32,11 +32,11 @@
     {{/inform}}
 
     <div class="input-group" style="margin: 5px; margin-right: 5rem">
-        <label for="block_slidefinder_courseinput-{{uniqid}}">
+        <label for="block_booksearch_courseinput-{{uniqid}}">
             <span class="sr-only">{{course_selector_param_name}}</span>
         </label>
         <select
-           id="block_slidefinder_courseinput-{{uniqid}}"
+           id="block_booksearch_courseinput-{{uniqid}}"
            class="custom-select singleselect form-control"
            name="{{course_selector_param_name}}"
            data-region="input"

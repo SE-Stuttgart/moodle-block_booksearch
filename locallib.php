@@ -15,9 +15,9 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Helper functions for the block_slidefinder Plugin
+ * Helper functions for the block_booksearch Plugin
  *
- * @package    block_slidefinder
+ * @package    block_booksearch
  * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -51,7 +51,7 @@ require_once(__DIR__ . '/pdfparser/alt_autoload.php-dist');
  * @return array [0] list of logical sections of content (section, filename, page, bookurl, text).
  * @return array [1] list of filenames of intended eligable pairs that have a problem
  */
-function block_slidefinder_get_all_content_of_course_as_sections_with_metadata($courseid, $userid) {
+function block_booksearch_get_all_content_of_course_as_sections_with_metadata($courseid, $userid) {
     global $DB;
 
     // Array of pdf_chapter metadata and content of all book to pdf matches in the given course.
@@ -62,11 +62,11 @@ function block_slidefinder_get_all_content_of_course_as_sections_with_metadata($
     try {
         // Course.
         if (!$course = $DB->get_record('course', ['id' => $courseid])) {
-            throw new moodle_exception(get_string('error_course_not_found', 'block_slidefinder'));
+            throw new moodle_exception(get_string('error_course_not_found', 'block_booksearch'));
         }
         // Does the user have access to the course?
         if (!can_access_course($course, $userid)) {
-            throw new moodle_exception(get_string('error_course_access_denied', 'block_slidefinder'));
+            throw new moodle_exception(get_string('error_course_access_denied', 'block_booksearch'));
         }
     } catch (\Throwable $th) {
         debugging($th);
@@ -75,7 +75,7 @@ function block_slidefinder_get_all_content_of_course_as_sections_with_metadata($
 
     try {
         // Get the Book to Pdf matches that exist. Array of metadata for each match.
-        $matches = block_slidefinder_get_all_book_pdf_matches_from_course($course);
+        $matches = block_booksearch_get_all_book_pdf_matches_from_course($course);
     } catch (\Throwable $th) {
         debugging($th);
         gc_collect_cycles();
@@ -85,7 +85,7 @@ function block_slidefinder_get_all_content_of_course_as_sections_with_metadata($
     foreach ($matches as $match) {
         try {
             // Split each pdf content into logical sections containing text and metadata.
-            $pagesections = block_slidefinder_get_content_as_sections($match);
+            $pagesections = block_booksearch_get_content_as_sections($match);
             if (!is_null($pagesections) && !empty($pagesections)) {
                 $sections = array_merge($sections, $pagesections);
             } else {
@@ -108,7 +108,7 @@ function block_slidefinder_get_all_content_of_course_as_sections_with_metadata($
  *
  * @return array list of matches as objects containing pdf file information and bookid
  */
-function block_slidefinder_get_all_book_pdf_matches_from_course($course) {
+function block_booksearch_get_all_book_pdf_matches_from_course($course) {
     // Get all PDFs from course.
     $fs = get_file_storage();
     $pdfs = [];
@@ -183,7 +183,7 @@ function block_slidefinder_get_all_book_pdf_matches_from_course($course) {
  *
  * @return array list of logical sections of content (section, filename, page, bookurl, text).
  */
-function block_slidefinder_get_content_as_sections($match) {
+function block_booksearch_get_content_as_sections($match) {
     $sections = [];
 
     $fs = get_file_storage();
@@ -203,11 +203,11 @@ function block_slidefinder_get_content_as_sections($match) {
     gc_collect_cycles();
 
     // Create a list of pages, where each page is a combination of match and pdf metadata for one pdf page.
-    $pages = block_slidefinder_get_pdf_metadata_as_pages($pdf, $match);
+    $pages = block_booksearch_get_pdf_metadata_as_pages($pdf, $match);
 
     // Split the list of pages (with metadata) into smaller logical sections containing metadata and text content.
     foreach ($pages as $page) {
-        $sections = array_merge($sections, block_slidefinder_get_page_as_sections_with_content($page));
+        $sections = array_merge($sections, block_booksearch_get_page_as_sections_with_content($page));
     }
 
     gc_collect_cycles();
@@ -222,16 +222,16 @@ function block_slidefinder_get_content_as_sections($match) {
  *
  * @return array of pages, each with metadata combined from match and parsed pdf and representing one pdf page.
  */
-function block_slidefinder_get_pdf_metadata_as_pages($pdf, $match) {
+function block_booksearch_get_pdf_metadata_as_pages($pdf, $match) {
     $pages = [];
     $pdfdetails = $pdf->getDetails();
 
     for ($i = 0; $i < $pdfdetails['Pages']; $i++) {
         $page = new stdClass();
         $page->section = $match->section;
-        $page->filename = str_replace('.pdf', get_string('pdf_replace', 'block_slidefinder'), $match->filename);
+        $page->filename = str_replace('.pdf', get_string('pdf_replace', 'block_booksearch'), $match->filename);
         $page->page = $i + 1;
-        $page->bookurl = block_slidefinder_get_book_chapter_url($match->bookid, $i + 1);
+        $page->bookurl = block_booksearch_get_book_chapter_url($match->bookid, $i + 1);
         $page->content = $pdf->getPages()[$i];
         $pages[] = $page;
     }
@@ -246,17 +246,17 @@ function block_slidefinder_get_pdf_metadata_as_pages($pdf, $match) {
  *
  * @return array The given page split into smaller sections (with metadata).
  */
-function block_slidefinder_get_page_as_sections_with_content($page) {
+function block_booksearch_get_page_as_sections_with_content($page) {
     $sections = [];
 
     // List of subsections/subsentences of text with metadata like size.
-    $subsections = block_slidefinder_get_sub_sections_from_page($page);
+    $subsections = block_booksearch_get_sub_sections_from_page($page);
     gc_collect_cycles();
 
     $currentsection = null;
 
     foreach ($subsections as $subsection) {
-        $isseperator = block_slidefinder_text_is_seperator($subsection->content);
+        $isseperator = block_booksearch_text_is_seperator($subsection->content);
         if (is_null($currentsection)) {
             if (!$isseperator) {
                 $currentsection = $subsection;
@@ -292,7 +292,7 @@ function block_slidefinder_get_page_as_sections_with_content($page) {
  *
  * @return array list of subsections/subsentences of text with metadata like size for the given page.
  */
-function block_slidefinder_get_sub_sections_from_page($page) {
+function block_booksearch_get_sub_sections_from_page($page) {
     // Subsections do no longer contain the end of a sentence inside the text.
     $subsections = [];
     $endofsentencepattern = '/(?<=[.?!;:])\s+/';
@@ -329,7 +329,7 @@ function block_slidefinder_get_sub_sections_from_page($page) {
  *
  * @return string url linking to the book chapter
  */
-function block_slidefinder_get_book_chapter_url($bookid, $pagenum) {
+function block_booksearch_get_book_chapter_url($bookid, $pagenum) {
     global $DB;
 
     $booktypeid = $DB->get_field('modules', 'id', ['name' => 'book'], MUST_EXIST);
@@ -348,7 +348,7 @@ function block_slidefinder_get_book_chapter_url($bookid, $pagenum) {
  *
  * @return bool true if it is a seperator.
  */
-function block_slidefinder_text_is_seperator($text) {
+function block_booksearch_text_is_seperator($text) {
     return strlen($text) <= 2;
 }
 
@@ -357,7 +357,7 @@ function block_slidefinder_text_is_seperator($text) {
  * @param int $cid ID of a course. The selected course is at the beginning of the array, else a selection method.
  * @return array Array of courses the current user has access to. Position 1 is either selected course or selection message.
  */
-function block_slidefinder_select_course_options(int $cid = 0) {
+function block_booksearch_select_course_options(int $cid = 0) {
     $courses = [];
 
     foreach (get_courses() as $course) {
@@ -377,7 +377,7 @@ function block_slidefinder_select_course_options(int $cid = 0) {
             return [];
         }
     } else {
-        array_unshift($courses, (object)['id' => 0, 'value' => get_string('select_course', 'block_slidefinder')]);
+        array_unshift($courses, (object)['id' => 0, 'value' => get_string('select_course', 'block_booksearch')]);
     }
 
     return $courses;
