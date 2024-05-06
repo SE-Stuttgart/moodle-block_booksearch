@@ -73,7 +73,7 @@ class block_booksearch extends block_base {
                 } else {
                     $course = null;
                 }
-                $text .= $OUTPUT->render_from_template('block_booksearch/lrf_drop_down', [
+                $text .= $OUTPUT->render_from_template('block_booksearch/block_booksearch_drop_down', [
                     'action' => $this->page->url,
                     'course_selector_param_name' => BLOCK_BOOKSEARCH_BOOKSEARCH_PARAM,
                     'course_selector_options' => block_booksearch_select_course_options($booksearchid),
@@ -102,7 +102,7 @@ class block_booksearch extends block_base {
                 }
             }
 
-            $text .= $OUTPUT->render_from_template('block_booksearch/lrf_search', [
+            $text .= $OUTPUT->render_from_template('block_booksearch/block_booksearch_search', [
                 'action' => $this->page->url,
                 'cid' => $booksearchid,
                 'course_selector_param_name' => BLOCK_BOOKSEARCH_BOOKSEARCH_PARAM,

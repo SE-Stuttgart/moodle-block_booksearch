@@ -15,7 +15,7 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_booksearch/lrf_search
+    @template block_booksearch/block_booksearch_search
 
     Complex Lecture Search
 
@@ -51,7 +51,7 @@
            name="{{ search_term_param_name }}"
            data-region="input"
            autocomplete="off"
-           oninput="lrfUpdateSearch()"
+           oninput="block_booksearchUpdateSearch()"
         >
         <div class="input-group-append">
             <button type="submit" class="btn {{^btnclass}}btn-submit{{/btnclass}} {{ btnclass }} search-icon">
@@ -68,54 +68,54 @@
 
     <div>
         <hr>
-        <h3 id="lrf-search-term-{{uniqid}}"> {{search_term_label}} {{search_term}} </h3>
+        <h3 id="block_booksearch-search-term-{{uniqid}}"> {{search_term_label}} {{search_term}} </h3>
         <hr>
-        <div id="lrf-content-{{uniqid}}" style="max-height: 700px; overflow: auto;">
+        <div id="block_booksearch-content-{{uniqid}}" style="max-height: 700px; overflow: auto;">
         </div>
     </div>
 
     <script type="text/javascript">
-        var lrf_origin_content_json = '{{content}}';
-        var lrf_origin_content = JSON.parse(atob(lrf_origin_content_json));
+        var block_booksearch_origin_content_json = '{{content}}';
+        var block_booksearch_origin_content = JSON.parse(atob(block_booksearch_origin_content_json));
 
-        var lrf_search_term = "{{search_term}}";
-        var lrf_searched_content = [];
+        var block_booksearch_search_term = "{{search_term}}";
+        var block_booksearch_searched_content = [];
 
         var context_length = 5;
 
-        lrfSearch();
+        block_booksearchSearch();
 
         /**
         * Call to update the search
-        * Gets new lrf_search_term and initiate the new search
+        * Gets new block_booksearch_search_term and initiate the new search
         */
-        function lrfUpdateSearch() {
-            lrf_search_term = document.getElementById("searchinput-{{uniqid}}").value;
-            lrfSearch();
+        function block_booksearchUpdateSearch() {
+            block_booksearch_search_term = document.getElementById("searchinput-{{uniqid}}").value;
+            block_booksearchSearch();
         }
 
         /**
-        * searches the lrf_origin_content using the new lrf_search_term
+        * searches the block_booksearch_origin_content using the new block_booksearch_search_term
         */
-        function lrfSearch() {
-            lrf_searched_content = [];
-            if (lrf_search_term) {
-                lrf_origin_content.forEach(lrfSearchContent);
-                lrfDisplayContent();
+        function block_booksearchSearch() {
+            block_booksearch_searched_content = [];
+            if (block_booksearch_search_term) {
+                block_booksearch_origin_content.forEach(block_booksearchSearchContent);
+                block_booksearchDisplayContent();
             } else {
-                document.getElementById("lrf-search-term-{{uniqid}}").innerHTML = "{{search_term_label}}";
-                document.getElementById("lrf-content-{{uniqid}}").innerHTML = '';
+                document.getElementById("block_booksearch-search-term-{{uniqid}}").innerHTML = "{{search_term_label}}";
+                document.getElementById("block_booksearch-content-{{uniqid}}").innerHTML = '';
             }
         }
 
         /**
         * searches one section of pdf-page/book-chapter.
-        * using the lrf_search_term and if found ads it with context to lrf_searched_content.
+        * using the block_booksearch_search_term and if found ads it with context to block_booksearch_searched_content.
         * @param {*} section
         */
-        function lrfSearchContent(section) {
+        function block_booksearchSearchContent(section) {
             // Is the searched word in this section?
-            if (!section.content.toLowerCase().includes(lrf_search_term.toLowerCase())) {
+            if (!section.content.toLowerCase().includes(block_booksearch_search_term.toLowerCase())) {
                 return;
             }
 
@@ -128,7 +128,7 @@
             // Iterate through the words to find occurrences of the search word.
             // Save the context snippet indices.
             for (let i = 0; i < words.length; i++) {
-                if (words[i].toLowerCase().includes(lrf_search_term.toLowerCase())) {
+                if (words[i].toLowerCase().includes(block_booksearch_search_term.toLowerCase())) {
                     // Calculate start and end indices for the context.
                     let start = Math.max(0, i - context_length);
                     let end = Math.min(words.length - 1, i + context_length);
@@ -167,38 +167,38 @@
             section.context = context;
             
             // Create new file entry in results if it does not exist.
-            if (!(section.filename in lrf_searched_content)) {
-                lrf_searched_content[section.filename] = [];
+            if (!(section.filename in block_booksearch_searched_content)) {
+                block_booksearch_searched_content[section.filename] = [];
             }
 
             // Set chapter entry as section or add section context to existing chapter entry.
-            if (!(section.page in lrf_searched_content[section.filename])) {
-                lrf_searched_content[section.filename][section.page] = section;
+            if (!(section.page in block_booksearch_searched_content[section.filename])) {
+                block_booksearch_searched_content[section.filename][section.page] = section;
             } else {
-                lrf_searched_content[section.filename][section.page].context += " ... " + section.context; 
+                block_booksearch_searched_content[section.filename][section.page].context += " ... " + section.context; 
             }
         }
 
         /**
-        * displayes the lrf_searched_content in a list format
+        * displayes the block_booksearch_searched_content in a list format
         */
-        function lrfDisplayContent() {
-            document.getElementById("lrf-search-term-{{uniqid}}").innerHTML = "{{search_term_label}}" + lrf_search_term;
+        function block_booksearchDisplayContent() {
+            document.getElementById("block_booksearch-search-term-{{uniqid}}").innerHTML = "{{search_term_label}}" + block_booksearch_search_term;
 
             var display = '';
-            for (var pdf_name in lrf_searched_content) {
+            for (var pdf_name in block_booksearch_searched_content) {
                 display += '<h4>' + pdf_name + '</h4>';
                 display += '<ul style="max-height: 200px; overflow: auto;">';
-                for (var chapter in lrf_searched_content[pdf_name]) {
+                for (var chapter in block_booksearch_searched_content[pdf_name]) {
                     display += '<li>' +
-                        '<a href="' + lrf_searched_content[pdf_name][chapter].bookurl + '">' +
+                        '<a href="' + block_booksearch_searched_content[pdf_name][chapter].bookurl + '">' +
                         '{{chapter_label}}' + '-' + chapter +
-                        '</a>: ' + lrf_searched_content[pdf_name][chapter].context +
+                        '</a>: ' + block_booksearch_searched_content[pdf_name][chapter].context +
                         '</li>';
                 }
                 display += '</ul>';
             }
-            document.getElementById("lrf-content-{{uniqid}}").innerHTML = display;
+            document.getElementById("block_booksearch-content-{{uniqid}}").innerHTML = display;
         }
     </script>
 </div>
