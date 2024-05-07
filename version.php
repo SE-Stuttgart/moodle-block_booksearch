@@ -17,14 +17,14 @@
 /**
  * Version Details
  *
- * @package    block_slidefinder
+ * @package    block_booksearch
  * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2024021300;  // The current plugin version (Date: YYYYMMDDHH).
+$plugin->version   = 2024050700;  // The current plugin version (Date: YYYYMMDDHH).
 $plugin->requires  = 2020061510;  // Requires this Moodle version.
-$plugin->component = 'block_slidefinder';  // Full name of the plugin (used for diagnostics).
+$plugin->component = 'block_booksearch';  // Full name of the plugin (used for diagnostics).
 $plugin->release = '1.1.1';
 $plugin->maturity = MATURITY_STABLE;

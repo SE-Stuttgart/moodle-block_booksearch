@@ -17,7 +17,7 @@
 /**
  * Describes WebServices
  *
- * @package    block_slidefinder
+ * @package    block_booksearch
  * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -25,17 +25,17 @@ defined('MOODLE_INTERNAL') || die();
 
 $functions = [
     // Info: local_PLUGINNAME_FUNCTIONNAME is the name of the web service function that the client will call.
-    'block_slidefinder_get_searched_locations' => [
+    'block_booksearch_get_searched_locations' => [
 
         // Class containing the external function.
-        'classname'     => 'block_slidefinder_external',
+        'classname'     => 'block_booksearch_external',
 
         // External function name.
         'methodname'    => 'get_searched_locations',
 
         // File containing the class/external function - not required if using namespaced auto-loading classes.
         // Defaults to the service's externalib.php.
-        'classpath'   => 'blocks/slidefinder/externallib.php',
+        'classpath'   => 'blocks/booksearch/externallib.php',
 
         // This documentation will be displayed in the generated API documentation.
         // Administration > Plugins > Webservices > API documentation.

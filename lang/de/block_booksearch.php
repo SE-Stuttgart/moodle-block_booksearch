@@ -15,35 +15,36 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Language settings english.
+ * Language settings german.
  *
- * @package    block_slidefinder
+ * @package    block_booksearch
  * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
 defined('MOODLE_INTERNAL') || die();
 
 // Config.
-$string['pluginname'] = 'Slide finder';
+$string['pluginname'] = 'Buchsuche';
+$string['privacy:metadata'] = 'Der Booksearch-Block zeigt an bzw. gibt zurück nur bereits vorhandene Buch-/Pdf-Daten.';
 
 // Block.
-$string['search_term'] = 'Search term: ';
-$string['chapter'] = 'Chapter';
-$string['misconfigured_info'] = 'The following files are flagged as matching but have not been set up correctly. '
-    . 'Maybe there is a chapter count mismatch between book and pdf?';
-$string['pdf_replace'] = ' (Book)';
+$string['search_term'] = 'Gesucht: ';
+$string['chapter'] = 'Kapitel';
+$string['misconfigured_info'] = "Die folgenden Dateien sind zwar als übereinstimmend gekennzeichnet,
+wurden aber nicht korrekt eingerichtet. Vielleicht stimmt die Kapitelanzahl zwischen Buch und pdf nicht überein?";
+$string['pdf_replace'] = ' (Buch)';
 
 // Search Field.
-$string['search'] = 'Search keyword...';
-$string['select_course'] = 'Select course...';
+$string['search'] = 'Suche...';
+$string['select_course'] = 'Wähle Kurs...';
 
 // Capabilities.
-$string['slidefinder:myaddinstance'] = 'Add a new slide finder block to my moodle Dashboard.';
-$string['slidefinder:addinstance'] = 'Add a new slide finder block to this page.';
+$string['booksearch:myaddinstance'] = 'Füge einen neuen Buchsuche Block zu meinem Moodle Dashboard hinzu';
+$string['booksearch:addinstance'] = 'Füge einen neuen Buchsuche Block zu dieser Seite hinzu';
 
 // Error.
-$string['error_message'] = 'There was a problem. Please contact the Plugin creator and send him the error. This is the error:';
+$string['error_message'] = "Es ist ein Problem aufgetreten.
+Bitte kontaktieren Sie den Ersteller des Plugins und senden Sie ihm den Fehler. Dies ist der Fehler:";
 $string['error_user_not_found'] = 'User does not exist.';
 $string['error_course_not_found'] = 'Course is misconfigured';
 $string['error_course_access_denied'] = 'Access to course denied.';

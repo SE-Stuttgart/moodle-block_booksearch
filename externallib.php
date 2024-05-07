@@ -17,7 +17,7 @@
 /**
  * Function for the WebService
  *
- * @package    block_slidefinder
+ * @package    block_booksearch
  * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -26,11 +26,11 @@ defined('MOODLE_INTERNAL') || die();
 require_once("$CFG->libdir/externallib.php");
 
 /**
- * External class for the slidefinder block.
+ * External class for the booksearch block.
  *
- * Let's a webservice use the slidefinder functionality.
+ * Let's a webservice use the booksearch functionality.
  */
-class block_slidefinder_external extends external_api {
+class block_booksearch_external extends external_api {
     /**
      * Returns description of method parameter
      * @return external_function_parameters
@@ -91,15 +91,15 @@ class block_slidefinder_external extends external_api {
         try {
             // User.
             if (!$user = $DB->get_record('user', ['id' => $userid])) {
-                throw new moodle_exception(get_string('error_user_not_found', 'block_slidefinder'));
+                throw new moodle_exception(get_string('error_user_not_found', 'block_booksearch'));
             }
             // Course.
             if (!$course = $DB->get_record('course', ['id' => $courseid])) {
-                throw new moodle_exception(get_string('error_course_not_found', 'block_slidefinder'));
+                throw new moodle_exception(get_string('error_course_not_found', 'block_booksearch'));
             }
-            // Does the user have access to the course?
-            if (!can_access_course($course, $user)) {
-                throw new moodle_exception(get_string('error_course_access_denied', 'block_slidefinder'));
+            // Does the webservice and user have access to the course?
+            if (!can_access_course($course) && !can_access_course($course, $user)) {
+                throw new moodle_exception(get_string('error_course_access_denied', 'block_booksearch'));
             }
         } catch (\Throwable $th) {
             debugging($th);
@@ -110,7 +110,7 @@ class block_slidefinder_external extends external_api {
         self::validate_context($coursecontext);
 
         // Get all searchable content.
-        $sections = block_slidefinder_get_all_content_of_course_as_sections_with_metadata($courseid, $userid)[0];
+        $sections = block_booksearch_get_all_content_of_course_as_sections_with_metadata($courseid, $userid)[0];
 
         // Get Search Results & Context for PDFs.
         $data = [];

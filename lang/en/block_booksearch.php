@@ -15,35 +15,36 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Language settings german.
+ * Language settings english.
  *
- * @package    block_slidefinder
+ * @package    block_booksearch
  * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+
 defined('MOODLE_INTERNAL') || die();
 
 // Config.
-$string['pluginname'] = 'Foliensuche';
+$string['pluginname'] = 'Booksearch';
+$string['privacy:metadata'] = 'The Booksearch block only displays/returns and links to existing book/pdf data.';
 
 // Block.
-$string['search_term'] = 'Gesucht: ';
-$string['chapter'] = 'Kapitel';
-$string['misconfigured_info'] = 'Die folgenden Dateien sind zwar als übereinstimmend gekennzeichnet, '
-    . 'wurden aber nicht korrekt eingerichtet. Vielleicht stimmt die Kapitelanzahl zwischen Buch und pdf nicht überein?';
-$string['pdf_replace'] = ' (Buch)';
+$string['search_term'] = 'Search term: ';
+$string['chapter'] = 'Chapter';
+$string['misconfigured_info'] = "The following files are flagged as matching but have not been set up correctly.
+Maybe there is a chapter count mismatch between book and pdf?";
+$string['pdf_replace'] = ' (Book)';
 
 // Search Field.
-$string['search'] = 'Suche...';
-$string['select_course'] = 'Wähle Kurs...';
+$string['search'] = 'Search keyword...';
+$string['select_course'] = 'Select course...';
 
 // Capabilities.
-$string['slidefinder:myaddinstance'] = 'Füge einen neuen Foliensuche Block zu meinem Moodle Dashboard hinzu';
-$string['slidefinder:addinstance'] = 'Füge einen neuen Foliensuche Block zu dieser Seite hinzu';
+$string['booksearch:myaddinstance'] = 'Add a new booksearch block to my moodle Dashboard.';
+$string['booksearch:addinstance'] = 'Add a new booksearch block to this page.';
 
 // Error.
-$string['error_message'] = 'Es ist ein Problem aufgetreten. '
-    . 'Bitte kontaktieren Sie den Ersteller des Plugins und senden Sie ihm den Fehler. Dies ist der Fehler:';
+$string['error_message'] = 'There was a problem. Please contact the Plugin creator and send him the error. This is the error:';
 $string['error_user_not_found'] = 'User does not exist.';
 $string['error_course_not_found'] = 'Course is misconfigured';
 $string['error_course_access_denied'] = 'Access to course denied.';

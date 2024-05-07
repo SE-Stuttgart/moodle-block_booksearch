@@ -5,7 +5,7 @@
 
 **German version please see below**
 
-The plugin was developed to provide a search field for text search in Moodle books with image-based slides. The plugin requires that a PDF of (almost) the same name is present in the same course section. The pages of the PDF need to correspond 1-1 to the pages in the book. Names of book and PDF need to be identical, except for text specified in brackets inside their names.
+The plugin was developed to provide a search field for text search in Moodle books with image-based chapters. The plugin requires that a PDF of (almost) the same name is present in the same course section. The pages of the PDF need to correspond 1-1 to the pages in the book. Names of book and PDF need to be identical, except for text specified in brackets inside their names.
 
 The plugin searches all PDFs for the text and then displays the search results as a list of links. Clicking on a link shows the respective page with the corresponding number inside the book.
 
@@ -15,7 +15,7 @@ More details on functionality and configuration of this plugin can be found in t
 
 ## German Description
 
-Das Plugin wurde entwickelt, um ein Suchfeld für die Textsuche nach Begriffen in Moodle-Büchern mit bildbasierten Folien bereitzustellen. Es erfordert, dass zu jedem Buch ein durchsuchbares PDF mit (fast) gleichen Namens bereitgestellt wird, dessen Seiten 1:1 zu den Seiten im Buch passen. Das PDF muss im selben Abschnitt wie das Buch liegen. Die Namen von Buch und PDF müssen identisch sein, ausgenommen ist in Klammern spezifizierter Text innerhalb der Namen.
+Das Plugin wurde entwickelt, um ein Suchfeld für die Textsuche nach Begriffen in Moodle-Büchern mit bildbasierten Kapiteln bereitzustellen. Es erfordert, dass zu jedem Buch ein durchsuchbares PDF mit (fast) gleichen Namens bereitgestellt wird, dessen Seiten 1:1 zu den Seiten im Buch passen. Das PDF muss im selben Abschnitt wie das Buch liegen. Die Namen von Buch und PDF müssen identisch sein, ausgenommen ist in Klammern spezifizierter Text innerhalb der Namen.
 
 Das Plugin sucht in allen PDFs nach den Begriffen und zeigt die Resultate als eine Liste von Links an. Durch Klicken auf den gewünschten Link wird die Seite mit der entsprechenden Seitennummer im Buch angezeigt.
 
@@ -49,21 +49,23 @@ This involves the following steps:
 2. Enable protocols: Here, enable the REST protocol if not already enabled.
 3. Create a new specific user.
 4. Check user capability: The specified user has to have at least the __webservice/rest:use__ capability. If the user does not have the permission, you can add the permission to a role and then add the user to that role.
-5. Select a service: Add the "Book Search" to custom services.
-6. Add functions: Add the "block_booksearch_get_searched_locations" function to the "Book Search" service.
+5. Select a service: Add the "Booksearch" to custom services.
+6. Add functions: Add the "block_booksearch_get_searched_locations" function to the "Booksearch" service.
 7. Select a specific user: Add the web services user as an authorised user.
-8. Create a token for a user: Create a token for the web services user.
+8. The authorized user needs the rights to access the course content.
+9. Create a token for a user: Create a token for the web services user.
+
 
 Test it by sending an http GET request to
-'http://[yourmoodle]/webservice/rest/server.php?wstoken=[user-token]&wsfunction=block_booksearch_get_searched_locations&moodlewsrestformat=json&search_string=[search_string]&course_id=[course_id]&context_length=[context_length]'
+'http://[yourmoodle]/webservice/rest/server.php?wstoken=[user_token]&wsfunction=block_booksearch_get_searched_locations&moodlewsrestformat=json&userid=[user_id]&courseid=[course_id]&searchstring=[search_string]&contextlength=[context_length]'
 where
 - yourmoodle: domain of your moodle installation (as developer: probably localhost)
-- user-token: token received from moodle for a user which is allowed to use the web service
-- search_string: the search string which is used to search in moodle books and pdfs
-- course_id: the id of the course the string is searched in
-- context_length: the number of word before and after each found string
+- user_token: token received from moodle for a user which is allowed to use the web service.
+- user_id: the id of the user that wants to access the webservice (This user needs to have access to the course content).
+- course_id: the id of the course the string is searched in.
+- search_string: the search string which is used to search in moodle books and pdfs.
+- context_length: the number of word before and after each found string.
 
-You should get a response with your search results in the JSON format.
 
 
 ## Installing via Uploaded ZIP File ##

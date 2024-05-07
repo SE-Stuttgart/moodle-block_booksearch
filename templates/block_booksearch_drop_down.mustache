@@ -15,16 +15,15 @@
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 }}
 {{!
-    @template block_slidefinder/lrf_drop_down
+    @template block_booksearch/block_booksearch_drop_down
 
     Complex Lecture Search
 
     Example context (json):
     {
         "action": "https://moodle.local/admin/search.php",
-        "course_selector_param_name": "lrf_cid",
-        "course_selector_options": [{"id": 3, "value": "VALUE"}],
-        "hidden_params":[{"name": "cache", "value": 1}]
+        "course_selector_param_name": "block_booksearch_cid",
+        "course_selector_options": [{"id": 3, "value": "VALUE"}]
     }
 }}
 <div class="simplesearchform">
@@ -33,11 +32,11 @@
     {{/inform}}
 
     <div class="input-group" style="margin: 5px; margin-right: 5rem">
-        <label for="block_slidefinder_courseinput-{{uniqid}}">
+        <label for="block_booksearch_courseinput-{{uniqid}}">
             <span class="sr-only">{{course_selector_param_name}}</span>
         </label>
         <select
-           id="block_slidefinder_courseinput-{{uniqid}}"
+           id="block_booksearch_courseinput-{{uniqid}}"
            class="custom-select singleselect form-control"
            name="{{course_selector_param_name}}"
            data-region="input"
@@ -46,7 +45,6 @@
         >
             {{#course_selector_options}} <option value="{{id}}">{{value}}</option>{{/course_selector_options}}
         </select>
-        {{#hidden_params}} <input type="hidden" name="{{name}}" value="{{value}}">{{/hidden_params}}
     </div>
 
     {{^inform}}

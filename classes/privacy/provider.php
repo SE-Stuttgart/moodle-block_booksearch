@@ -15,30 +15,29 @@
 // along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
 
 /**
- * Capability definitions for this module.
+ * Privacy Information
  *
  * @package    block_booksearch
  * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-defined('MOODLE_INTERNAL') || die();
 
-$capabilities = [
-    'block/booksearch:myaddinstance' => [
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_SYSTEM,
-        'archetypes' => [
-            'guest'          => CAP_ALLOW,
-        ],
-        'clonepermissionsfrom' => 'moodle/my:manageblocks',
-    ],
+namespace block_booksearch\privacy;
 
-    'block/booksearch:addinstance' => [
-        'captype' => 'write',
-        'contextlevel' => CONTEXT_BLOCK,
-        'archetypes' => [
-            'user'          => CAP_PREVENT,
-        ],
-        'clonepermissionsfrom' => 'moodle/site:manageblocks',
-    ],
-];
+/**
+ * This class provides information to the user about how their personal data is handled.
+ */
+class provider implements
+    // This plugin does not store any personal user data.
+    \core_privacy\local\metadata\null_provider {
+
+    /**
+     * Get the language string identifier with the component's language
+     * file to explain why this plugin stores no data.
+     *
+     * @return  string
+     */
+    public static function get_reason(): string {
+        return 'privacy:metadata';
+    }
+}
