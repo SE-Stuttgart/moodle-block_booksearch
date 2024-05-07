@@ -49,19 +49,15 @@ This involves the following steps:
 2. Enable protocols: Here, enable the REST protocol if not already enabled.
 3. Create a new specific user.
 4. Check user capability: The specified user has to have at least the __webservice/rest:use__ capability. If the user does not have the permission, you can add the permission to a role and then add the user to that role.
-5. Select a service: Add the "Book Search" to custom services.
-6. Add functions: Add the "block_booksearch_get_searched_locations" function to the "Book Search" service.
+5. Select a service: Add the "Booksearch" to custom services.
+6. Add functions: Add the "block_booksearch_get_searched_locations" function to the "Booksearch" service.
 7. Select a specific user: Add the web services user as an authorised user.
 8. The authorized user needs the rights to access the course content.
 9. Create a token for a user: Create a token for the web services user.
 
 
 Test it by sending an http GET request to
-<<<<<<< HEAD
 'http://[yourmoodle]/webservice/rest/server.php?wstoken=[user_token]&wsfunction=block_booksearch_get_searched_locations&moodlewsrestformat=json&userid=[user_id]&courseid=[course_id]&searchstring=[search_string]&contextlength=[context_length]'
-=======
-'http://[yourmoodle]/webservice/rest/server.php?wstoken=[user-token]&wsfunction=block_booksearch_get_searched_locations&moodlewsrestformat=json&search_string=[search_string]&course_id=[course_id]&context_length=[context_length]'
->>>>>>> 6f7476a3d28b295ca56148e91e50c6ca95ef65cc
 where
 - yourmoodle: domain of your moodle installation (as developer: probably localhost)
 - user_token: token received from moodle for a user which is allowed to use the web service.
@@ -70,7 +66,6 @@ where
 - search_string: the search string which is used to search in moodle books and pdfs.
 - context_length: the number of word before and after each found string.
 
-You should get a response with your search results in the JSON format.
 
 
 ## Installing via Uploaded ZIP File ##
