@@ -11,7 +11,7 @@ The plugin searches all PDFs for the text and then displays the search results a
 
 The search function is available if a corresponding block is configured (see below). Alternatively, the function may be reached using a web service. The configuration of the web service is also described below.
 
-More details on functionality and configuration of this plugin can be found in the [Wiki](https://github.com/SE-Stuttgart/kib3_moodleplugin_booksearch/wiki).
+More details on functionality and configuration of this plugin can be found in the [Wiki]([https://github.com/SE-Stuttgart/kib3_moodleplugin_booksearch/wiki](https://github.com/SE-Stuttgart/moodle-block_booksearch/wiki)).
 
 ## German Description
 
@@ -21,7 +21,7 @@ Das Plugin sucht in allen PDFs nach den Begriffen und zeigt die Resultate als ei
 
 Die Suchfunktion steht zur Verfügung, wenn man einen entsprechenden Block konfiguriert (s.u.). Alternativ kann sie über einen Webservice erreicht werden. Die Konfiguration des Web Service ist ebenfalls unten beschrieben.
 
-Mehr Informationen zu den Funktionen und zur Konfiguration des Plugins sind im [Wiki](https://github.com/SE-Stuttgart/kib3_moodleplugin_booksearch/wiki) zu finden.
+Mehr Informationen zu den Funktionen und zur Konfiguration des Plugins sind im [Wiki]([https://github.com/SE-Stuttgart/kib3_moodleplugin_booksearch/wiki](https://github.com/SE-Stuttgart/moodle-block_booksearch/wiki)) zu finden.
 
 
 # Usage and API Configuration
