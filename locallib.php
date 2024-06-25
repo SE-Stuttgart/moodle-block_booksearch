@@ -75,7 +75,7 @@ function block_booksearch_get_all_content_of_course_as_sections_with_metadata($c
 
     try {
         // Get the Book to Pdf matches that exist. Array of metadata for each match.
-        $matches = block_booksearch_get_all_book_pdf_matches_from_course($course);
+        $matches = block_booksearch_get_all_book_pdf_matches_from_course($course, $userid);
     } catch (\Throwable $th) {
         debugging($th);
         gc_collect_cycles();
@@ -97,7 +97,6 @@ function block_booksearch_get_all_content_of_course_as_sections_with_metadata($c
             gc_collect_cycles();
         }
     }
-
     return [$sections, $misconfiguredmatches];
 }
 
@@ -108,11 +107,11 @@ function block_booksearch_get_all_content_of_course_as_sections_with_metadata($c
  *
  * @return array list of matches as objects containing pdf file information and bookid
  */
-function block_booksearch_get_all_book_pdf_matches_from_course($course) {
+function block_booksearch_get_all_book_pdf_matches_from_course($course, $userid) {
     // Get all PDFs from course.
     $fs = get_file_storage();
     $pdfs = [];
-    foreach (get_all_instances_in_course('resource', $course) as $resource) {
+    foreach (get_all_instances_in_course('resource', $course, $userid, false) as $resource) {
         // Get all resources.
         $cm = get_coursemodule_from_instance('resource', $resource->id, $resource->course, false, MUST_EXIST);
         $files = $fs->get_area_files(
@@ -147,7 +146,7 @@ function block_booksearch_get_all_book_pdf_matches_from_course($course) {
 
     // Get all books from course.
     $sectionedbooks = [];
-    $books = get_all_instances_in_course('book', $course);
+    $books = get_all_instances_in_course('book', $course, $userid, false);
     foreach ($books as $book) {
         $sectionedbooks[$book->section][$book->id] =
             trim(preg_replace('/\s*\[[^]]*\](?![^[]*\[)/', '', preg_replace('/\s*\([^)]*\)(?![^(]*\()/', '', $book->name)));
