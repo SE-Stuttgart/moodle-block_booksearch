@@ -50,18 +50,17 @@ This involves the following steps:
 3. Create a new specific user.
 4. Check user capability: The specified user has to have at least the __webservice/rest:use__ capability. If the user does not have the permission, you can add the permission to a role and then add the user to that role.
 5. Select a service: Add the "Booksearch" to custom services.
-6. Add functions: Add the "block_booksearch_get_searched_locations" function to the "Booksearch" service.
-7. Select a specific user: Add the web services user as an authorised user.
-8. The authorized user needs the rights to access the course content.
-9. Create a token for a user: Create a token for the web services user.
+6. Add functions: Add the "block_booksearch_search_course_book_content" function to the "Booksearch" service. Here you see that the function has the required capability __block/booksearch:searchservice__. The user gets this capability by being a teacher, editing teacher or manager for the course it wants to search, it does not need to be a capability vsible in __Step 3.__. As the user needs to have this capability, he needs to be a teacher, editing teacher or manager for all courses you want to be able to search.
+7. Select a specific user: If the services users is not set to _All users_ you need to add the web services user as an authorised user.
+8. Create a token for a user: Create a token for the web services user.
+
 
 
 Test it by sending an http GET request to
-'http://[yourmoodle]/webservice/rest/server.php?wstoken=[user_token]&wsfunction=block_booksearch_get_searched_locations&moodlewsrestformat=json&userid=[user_id]&courseid=[course_id]&searchstring=[search_string]&contextlength=[context_length]'
+'http://[yourmoodle]/webservice/rest/server.php?wstoken=[user_token]&wsfunction=block_booksearch_get_searched_locations&moodlewsrestformat=json&courseid=[course_id]&searchstring=[search_string]&contextlength=[context_length]'
 where
 - yourmoodle: domain of your moodle installation (as developer: probably localhost)
 - user_token: token received from moodle for a user which is allowed to use the web service.
-- user_id: the id of the user that wants to access the webservice (This user needs to have access to the course content).
 - course_id: the id of the course the string is searched in.
 - search_string: the search string which is used to search in moodle books and pdfs.
 - context_length: the number of word before and after each found string.

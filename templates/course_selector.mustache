@@ -13,9 +13,14 @@
 
     You should have received a copy of the GNU General Public License
     along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+
+    Template to display a course selection drop down menu.
+    @package    block_booksearch
+    @copyright  2024 University of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 }}
 {{!
-    @template block_booksearch/block_booksearch_drop_down
+    @template block_booksearch/course_selector
 
     Complex Lecture Search
 
@@ -31,16 +36,15 @@
     <form autocomplete="off" action="{{action}}" method="get" accept-charset="utf-8" class="mform form-inline simplesearchform">
     {{/inform}}
 
-    <div class="input-group" style="margin: 5px; margin-right: 5rem">
+    <div class="input-group bs-input-group">
         <label for="block_booksearch_courseinput-{{uniqid}}">
             <span class="sr-only">{{course_selector_param_name}}</span>
         </label>
         <select
            id="block_booksearch_courseinput-{{uniqid}}"
-           class="custom-select singleselect form-control"
+           class="custom-select singleselect form-control bs-select"
            name="{{course_selector_param_name}}"
            data-region="input"
-           style="margin-left: 0rem"
            onChange="this.form.submit()"
         >
             {{#course_selector_options}} <option value="{{id}}">{{value}}</option>{{/course_selector_options}}
