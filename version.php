@@ -23,7 +23,7 @@
  */
 defined('MOODLE_INTERNAL') || die();
 
-$plugin->version   = 2024072603;  // The current plugin version (Date: YYYYMMDDHH).
+$plugin->version   = 2024072604;  // The current plugin version (Date: YYYYMMDDHH).
 $plugin->requires  = 2020061510;  // Requires this Moodle version.
 $plugin->component = 'block_booksearch';  // Full name of the plugin (used for diagnostics).
 $plugin->release = '1.1.3';

@@ -33,7 +33,7 @@ export function init() {
 
 /**
  * Function to handle search term input event
- * @param {*} event 
+ * @param {*} event The input event catched by the listener.
  */
 function handleSearchInputChange(event) {
     const searchTerm = event.target.value;

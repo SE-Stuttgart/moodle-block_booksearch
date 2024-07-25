@@ -60,10 +60,10 @@ class search {
      * @param stdClass $section An array representing a section of content with keys 'content' (text) and 'filename' (file name).
      * @param string $searchterm The term to search for within the section content.
      * @param int $contextlength The number of words to include before and after each occurrence of the search term.
-     * @param mixed &$searchresults An array to store the search results, with filenames as keys and sections as values.
+     * @param array $searchresults A reference to an array to store the search results.
      * [filename => [page => [section => filename, url, bookurl, context]]]
      */
-    private static function get_section_results(stdClass $section, string $searchterm, int $contextlength, mixed &$searchresults) {
+    private static function get_section_results($section, $searchterm, $contextlength, &$searchresults) {
         // Get the section content.
         $content = strtolower($section->content);
         $term = strtolower($searchterm);
