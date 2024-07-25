@@ -34,21 +34,20 @@
 }}
 <div class="simplesearchform">
 
-    <input type="hidden" id="bs-search-term-label" value="{{search_term_label}}"></input>
-    <input type="hidden" id="bs-json-course-content" value="{{course_content}}"></input>
+    <input type="hidden" id="bs-search-term-label" value="{{search_term_label}}"/>
+    <input type="hidden" id="bs-json-course-content" value="{{course_content}}"/>
 
     <label for="bs-search-input">
         <span class="sr-only">{{{ search_term_placeholder }}}</span>
     </label>
     <input type="text"
         id="bs-search-input"
-       class="form-control"
-       placeholder="{{ search_term_placeholder }}"
+        class="form-control"
+        placeholder="{{ search_term_placeholder }}"
         aria-label="{{ search_term_placeholder }}"
-       name="{{ search_term_param_name }}"
-       data-region="input"
+        data-region="input"
         autocomplete="off"
-       oninput="block_booksearchUpdateSearch()"
+        oninput="block_booksearchUpdateSearch()"
     >
 
     <div>
@@ -58,10 +57,8 @@
         <div id="bs-content" class="bs-content-box">
         </div>
     </div>
-
-    {{#js}} require(['block_booksearch/amd/src/search_and_display'], (module) => module.init()); {{/js}}
     
-    <script type="text/javascript">
+    <script>
         // Set up the search term oninput event listener
         document.addEventListener('DOMContentLoaded', function() {
             const inputElement = document.getElementById('bs-search-input');

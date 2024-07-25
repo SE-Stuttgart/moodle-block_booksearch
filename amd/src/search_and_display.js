@@ -16,7 +16,7 @@
 /**
  * Block core and UI
  *
- * @package    block_booksearch
+ * package    block_booksearch
  * @copyright  2024 University of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
@@ -31,7 +31,10 @@ export function init() {
     });
 }
 
-// Function to handle search term input event
+/**
+ * Function to handle search term input event
+ * @param {*} event 
+ */
 function handleSearchInputChange(event) {
     const searchTerm = event.target.value;
     const searchTermLabel = document.getElementById('bs-search-term-label').value;
@@ -87,7 +90,7 @@ function getResultsUI(searchResults) {
 
 /**
  * Processes a section of content to extract and format search results based on a search term and context length.
- * @param {Object} section - An object representing a section of content with properties `content` (text) and `filename` (file name).
+ * @param {Object} section - An object representing a section of content with properties `content` (text) and `filename`.
  * @param {string} searchTerm - The term to search for within the section content.
  * @param {number} contextLength - The number of words to include before and after each occurrence of the search term.
  * @param {Object} searchResults - An object to store the search results, with filenames as keys and sections as values.
@@ -201,9 +204,11 @@ function processContextWords(contextWords, contextLength) {
     let currentOccurrenceEnd = -2 * contextLength;
 
     for (let i = 0; i < contextWords.length; i++) {
-        const [isOccurrence, index, word] = contextWords[i];
+        const [isOccurrence, index, _] = contextWords[i];
 
-        if (!isOccurrence) continue;
+        if (!isOccurrence) {
+            continue;
+        }
 
         const start = Math.max(0, index - contextLength);
         const end = Math.min(contextWords.length - 1, index + contextLength);
@@ -298,7 +303,6 @@ function combineWordsInOccurrences(words, occurrences) {
  */
 function splitTextWithIndices(text) {
     const words = [];
-    let startIndex = 0;
     const regex = /\S+/g; // Matches any non-whitespace sequence.
 
     let match;
@@ -317,7 +321,9 @@ function splitTextWithIndices(text) {
  * @returns {number[][]} Array of pairs [start, end].
  */
 function expandOccuranceData(positions, length) {
-    if (positions.length === 0) return [];
+    if (positions.length === 0) {
+        return [];
+    }
 
     const result = [];
     let currentStart = positions[0];
@@ -352,7 +358,7 @@ function expandOccuranceData(positions, length) {
  */
 function getTermOccurances(content, term) {
     const occurances = [];
-    let startIndex = 0
+    let startIndex = 0;
     while ((startIndex = content.indexOf(term, startIndex)) !== -1) {
         occurances.push(startIndex);
         startIndex += 1;

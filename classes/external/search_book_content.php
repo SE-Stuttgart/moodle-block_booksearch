@@ -24,6 +24,7 @@
 
 namespace block_booksearch\external;
 
+require_once(__DIR__ . '/../../../../config.php');
 require_once(__DIR__ . '/../../locallib.php');
 
 use external_api;

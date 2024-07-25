@@ -54,7 +54,7 @@ class block_booksearch extends block_base {
             return $this->content;
         }
 
-        // Register the stylesheet
+        // Register the stylesheet.
         $this->page->requires->css('/blocks/booksearch/styles.css');
 
         // Main Content (text) and Footer of the block.

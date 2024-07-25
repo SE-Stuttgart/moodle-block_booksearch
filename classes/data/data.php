@@ -24,6 +24,7 @@
 
 namespace block_booksearch\data;
 
+require_once(__DIR__ . '/../../../../config.php');
 require_once(__DIR__ . '/../../locallib.php');
 
 use context_module;
@@ -75,7 +76,6 @@ class data {
         $sections = [];
         // Array of pdf_chapter metadata of all book to pdf matches with some misconfigurations in the given course.
         $misconfiguredmatches = [];
-
 
         list($isvalid, $course, $error) = block_booksearch_validate_course_access($courseid, $userid);
         if (!$isvalid) {

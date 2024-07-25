@@ -51,5 +51,5 @@ $capabilities = [
             'teacher' => CAP_ALLOW,
         ],
         'clonepermissionsfrom' => 'moodle/course:enrolreview',
-    ]
+    ],
 ];
