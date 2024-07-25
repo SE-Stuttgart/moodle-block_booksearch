@@ -25,21 +25,14 @@ defined('MOODLE_INTERNAL') || die();
 
 $functions = [
     // Info: local_PLUGINNAME_FUNCTIONNAME is the name of the web service function that the client will call.
-    'block_booksearch_get_searched_locations' => [
+    'block_booksearch_search_course_book_content' => [
 
         // Class containing the external function.
-        'classname'     => 'block_booksearch_external',
-
-        // External function name.
-        'methodname'    => 'get_searched_locations',
-
-        // File containing the class/external function - not required if using namespaced auto-loading classes.
-        // Defaults to the service's externalib.php.
-        'classpath'   => 'blocks/booksearch/externallib.php',
+        'classname'     => 'block_booksearch\external\search_book_content',
 
         // This documentation will be displayed in the generated API documentation.
         // Administration > Plugins > Webservices > API documentation.
-        'description'   => 'This is a web service for the chatbot from the University of Stuttgart.',
+        'description'   => 'Search valid (see README.md) books in a course you can access for a given term.',
 
         // The value is 'write' if your function does any database change, otherwise it is 'read'.
         'type'          => 'read',
@@ -50,7 +43,7 @@ $functions = [
         // List the capabilities required by the function (those in a require_capability() call).
         // Missing capabilities are displayed for authorised users.
         // And also for manually created tokens in the web interface, this is just informative.
-        'capabilities'  => '',
+        'capabilities'  => 'block/booksearch:searchservice',
 
         // Optional, only available for Moodle 3.1 onwards.
         // List of built-in services (by shortname) where the function will be included.

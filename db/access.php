@@ -18,7 +18,7 @@
  * Capability definitions for this module.
  *
  * @package    block_booksearch
- * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
+ * @copyright  2022 University of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();
@@ -40,5 +40,16 @@ $capabilities = [
             'user'          => CAP_PREVENT,
         ],
         'clonepermissionsfrom' => 'moodle/site:manageblocks',
+    ],
+
+    'block/booksearch:searchservice' => [
+        'captype' => 'read',
+        'contextlevel' => CONTEXT_COURSE,
+        'archetypes' => [
+            'manager' => CAP_ALLOW,
+            'editingteacher' => CAP_ALLOW,
+            'teacher' => CAP_ALLOW,
+        ],
+        'clonepermissionsfrom' => 'moodle/course:enrolreview',
     ],
 ];
