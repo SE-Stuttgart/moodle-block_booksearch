@@ -16,19 +16,24 @@
 /**
  * Block core and UI
  *
- * package    block_booksearch
+ * @module     block_booksearch/search_and_display
  * @copyright  2024 University of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
 /**
- * Sets up the event listener for search input changes.
+ * String label 'Chapter' in the current language.
  */
-export function init() {
-    document.addEventListener('DOMContentLoaded', function() {
-        const inputElement = document.getElementById('bs-search-input');
-        inputElement.addEventListener('input', handleSearchInputChange);
-    });
+let chapterLabel = 'Chapter';
+
+/**
+ * Sets up the event listener for search input changes.
+ * @param {string} label String label 'Chapter' in the current language.
+ */
+export function init(label) {
+    chapterLabel = label;
+    const inputElement = document.getElementById('bs-search-input');
+    inputElement.addEventListener('input', handleSearchInputChange);
 }
 
 /**
@@ -76,7 +81,7 @@ function getResultsUI(searchResults) {
             // Add each chapter as a list item with a link and context
             display += '<li>' +
                 '<a href="' + searchResults[pdfName][chapter].bookurl + '">' +
-                '{{chapter_label}}' + '-' + chapter +
+                chapterLabel + '-' + chapter +
                 '</a>: ' + searchResults[pdfName][chapter].context +
                 '</li>';
         }
