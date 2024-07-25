@@ -63,7 +63,7 @@ class search {
      * @param mixed &$searchresults An array to store the search results, with filenames as keys and sections as values.
      * [filename => [page => [section => filename, url, bookurl, context]]]
      */
-    private static function get_section_results($section, $searchterm, $contextlength, &$searchresults) {
+    private static function get_section_results(stdClass $section, string $searchterm, int $contextlength, mixed &$searchresults) {
         // Get the section content.
         $content = strtolower($section->content);
         $term = strtolower($searchterm);

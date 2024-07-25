@@ -24,9 +24,6 @@
 
 namespace block_booksearch\data;
 
-require_once(__DIR__ . '/../../../../config.php');
-require_once(__DIR__ . '/../../locallib.php');
-
 use context_module;
 use moodle_url;
 use stdClass;
@@ -70,7 +67,8 @@ class data {
      * @return array [1] list of filenames of intended eligable pairs that have a problem
      */
     private static function get_all_content_of_course_as_sections_with_metadata($courseid, $userid) {
-        global $DB;
+        global $CFG, $DB;
+        require_once(__DIR__ . '/../../locallib.php');
 
         // Array of pdf_chapter metadata and content of all book to pdf matches in the given course.
         $sections = [];

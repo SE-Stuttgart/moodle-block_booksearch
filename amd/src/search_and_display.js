@@ -204,7 +204,7 @@ function processContextWords(contextWords, contextLength) {
     let currentOccurrenceEnd = -2 * contextLength;
 
     for (let i = 0; i < contextWords.length; i++) {
-        const [isOccurrence, index, _] = contextWords[i];
+        const [isOccurrence, index] = contextWords[i];
 
         if (!isOccurrence) {
             continue;
