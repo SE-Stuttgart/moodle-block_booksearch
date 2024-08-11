@@ -18,7 +18,7 @@
  * Describes WebServices
  *
  * @package    block_booksearch
- * @copyright  2022 Universtity of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
+ * @copyright  2022 University of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 defined('MOODLE_INTERNAL') || die();

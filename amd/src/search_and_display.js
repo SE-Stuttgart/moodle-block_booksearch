@@ -47,10 +47,9 @@ function handleSearchInputChange(event) {
     const contextLength = 5;
 
     let searchResults = [];
-
     // We search the content if we have a search term.
     if (searchTerm) {
-        courseContent.forEach(section => getSectionResults(section, searchTerm, contextLength, searchResults));
+        searchResults = getSearchResults(courseContent, searchTerm, contextLength);
     }
 
     // Update the inner HTML of the element with ID 'bs-search-term' to display the current search Term.
@@ -94,279 +93,289 @@ function getResultsUI(searchResults) {
 
 
 /**
- * Processes a section of content to extract and format search results based on a search term and context length.
- * @param {Object} section - An object representing a section of content with properties `content` (text) and `filename`.
- * @param {string} searchTerm - The term to search for within the section content.
- * @param {number} contextLength - The number of words to include before and after each occurrence of the search term.
- * @param {Object} searchResults - An object to store the search results, with filenames as keys and sections as values.
+ * Processes an array of content sections to extract and format search results based on a search term and context length.
+ * @param {Array} courseContent Array of content sections, where each section is an object
+ * with keys 'content', 'filename', and 'page'.
+ * @param {string} searchTerm The term to search for within the content sections.
+ * @param {number} contextLength The number of words to include before and after each occurrence of the search term.
+ * @return {Object} The search results, with filenames as keys and sections as values.
+ * [filename: {page: {section}}]
  */
-function getSectionResults(section, searchTerm, contextLength, searchResults) {
-    // Get the section content.
-    const content = section.content.toLowerCase();
-    const term = searchTerm.toLowerCase();
+function getSearchResults(courseContent, searchTerm, contextLength) {
+    const results = {};
+
+    courseContent.forEach(section => {
+        // Get any search results with context from the section.
+        const context = getSectionSearchResultContext(section.content, searchTerm, contextLength);
+
+        // Add result to the section object.
+        section.context = context;
+
+        // Skip this section if there's no context (no result).
+        if (context.length < 1) {
+            return;
+        }
+
+        // Create new file entry in results if it does not exist.
+        if (!results.hasOwnProperty(section.filename)) {
+            results[section.filename] = {};
+        }
+
+        // Set chapter entry as section or add section context to existing chapter entry.
+        if (!results[section.filename].hasOwnProperty(section.page)) {
+            results[section.filename][section.page] = {
+                filename: section.filename,
+                url: section.url,
+                bookUrl: section.bookUrl,
+                context: section.context
+            };
+        } else {
+            // Append to existing context if the section already exists.
+            results[section.filename][section.page].context += section.context;
+        }
+    });
+
+    return results;
+}
+
+
+/**
+ * Get a combined string of any found search term occurrences in the content with the surrounding words as context.
+ * @param {string} content The text content to search in.
+ * @param {string} searchTerm The term to search for in this content.
+ * @param {number} contextLength The number of words on each side surrounding the found occurrence to be returned as context.
+ * @return {string} Text snippets for each term occurrence with their context, combined as one.
+ */
+function getSectionSearchResultContext(content, searchTerm, contextLength) {
+    const searchContent = content.toLowerCase();
+    searchTerm = searchTerm.toLowerCase();
 
     // Check if the search term is present in the content.
-    if (!content.includes(term)) {
-        return;
+    if (searchContent.indexOf(searchTerm) === -1) {
+        return "";
     }
 
-    // Get all term occurances in the content with index.
-    const occuranceIndexes = getTermOccurances(content, term);
+    // Get the text indexes of the term occurrences. Array of objects with 'start' and 'end' properties.
+    const occurrenceIndexes = findOccurrences(searchContent, searchTerm);
 
-    // Expannd and combine the occurances into ranges with start and end index.
-    const occuranceRanges = expandOccuranceData(occuranceIndexes, term.length);
+    // Get the text as words and word starting indexes.
+    const [words, wordIndexes] = splitTextIntoWords(content);
 
-    // Get all words in content with starting index.
-    const words = splitTextWithIndices(content);
+    // Get the word number positions of the context we want to return. Objects with 'start' and 'end' properties.
+    const contextPositions = getContextPositions(occurrenceIndexes, wordIndexes, contextLength);
 
-    // Combine all words belonging to the same search result occurance to have the best context.
-    const contextWords = combineWordsInOccurrences(words, occuranceRanges);
+    // Get the combined string context.
+    const context = getContext(words, contextPositions);
 
-    // Get all occurance indexes for the contextWords array.
-    const contextSnippetIndexes = processContextWords(contextWords, contextLength);
-
-    // Combine all words within context size range of one search term occurance into one result. Discard unnecessary words.
-    const contextSnippets = createContextSnippets(contextWords, contextSnippetIndexes);
-
-    // Combine all Occurances into a single string.
-    const result = generateFinalResult(contextWords, contextSnippetIndexes, contextSnippets);
-
-    // Add result to the section object.
-    section.context = result;
-
-    // Create new file entry in results if it does not exist.
-    if (!(section.filename in searchResults)) {
-        searchResults[section.filename] = [];
-    }
-
-    // Set chapter entry as section or add section context to existing chapter entry.
-    if (!(section.page in searchResults[section.filename])) {
-        searchResults[section.filename][section.page] = section;
-    } else {
-        searchResults[section.filename][section.page].context += " ... " + section.context;
-    }
+    return context;
 }
 
 
 /**
- * Generates the final result string with context snippets and ellipses.
- * @param {Array<[boolean, number, string]>} contextWords - Array of combined words with starting indices.
- * @param {Array<[number, number]>} contextSnippetIndexes - Array of start and end indices for context snippets.
- * @param {Array<string>} contextSnippets - Array of context snippets as strings.
- * @returns {string} - Final result string with ellipses.
+ * Searches for occurrences of a term in a given text and returns an array of occurrence objects.
+ * Each occurrence object contains the start index (position in text) and the end index.
+ * @param {string} text The text in which to search for the term.
+ * @param {string} term The term to search for within the text.
+ * @return {Array} An array of objects, each with 'start' and 'end' properties.
  */
-function generateFinalResult(contextWords, contextSnippetIndexes, contextSnippets) {
-    // Collapse context snippets into a single string separated by ' ... '.
-    let result = contextSnippets.join(' ... ');
-
-    // Add ellipses at the beginning if the first context snippet does not start at 0.
-    if (contextSnippetIndexes[0][0] > 0) {
-        result = '... ' + result;
-    }
-
-    // Add ellipses at the end if the last context snippet does not end at the last word.
-    if (contextSnippetIndexes[contextSnippetIndexes.length - 1][1] < contextWords.length - 1) {
-        result = result + ' ...';
-    }
-
-    return result;
-}
-
-
-/**
- * Creates context snippets from context words and snippet indexes.
- * @param {Array<[boolean, number, string]>} contextWords - Array of combined words with starting indices.
- * @param {Array<[number, number]>} contextSnippetIndexes - Array of start and end indices for context snippets.
- * @returns {Array<string>} - Array of context snippets as strings.
- */
-function createContextSnippets(contextWords, contextSnippetIndexes) {
-    const result = [];
-
-    for (let i = 0; i < contextSnippetIndexes.length; i++) {
-        const [start, end] = contextSnippetIndexes[i];
-        const words = [];
-
-        for (let index = start; index <= end; index++) {
-            words.push(contextWords[index][2]); // Get the word from the contextWords array.
-        }
-
-        result.push(words.join(' ')); // Collapse words into a single string.
-    }
-
-    return result;
-}
-
-
-/**
- * This function returns the start and end indexes for the context for each search term occurance.
- * @param {Array<[boolean, number, string]>} contextWords - Array of combined words with starting indices.
- * @param {number} contextLength - Number of words before and after each occurrence to include in the context.
- * @returns {Array<[number, number]>} - Array of start and end indices of occurrences.
- */
-function processContextWords(contextWords, contextLength) {
+function findOccurrences(text, term) {
     const occurrences = [];
-    let currentOccurrenceStart = -2 * contextLength;
-    let currentOccurrenceEnd = -2 * contextLength;
+    const termLength = term.length;
 
-    for (let i = 0; i < contextWords.length; i++) {
-        const [isOccurrence, index] = contextWords[i];
+    // Use indexOf to find the occurrences of the term in the text.
+    let offset = 0;
+    let index;
 
-        if (!isOccurrence) {
-            continue;
-        }
-
-        const start = Math.max(0, index - contextLength);
-        const end = Math.min(contextWords.length - 1, index + contextLength);
-
-        // IF the context of two occurances touch, they get combined.
-        if (currentOccurrenceEnd >= start - 1) {
-            currentOccurrenceEnd = end;
-            continue;
-        }
-
-        // The occurances are too far apart and get seperated.
-        occurrences.push([currentOccurrenceStart, currentOccurrenceEnd]);
-        currentOccurrenceStart = start;
-        currentOccurrenceEnd = end;
+    while ((index = text.indexOf(term, offset)) !== -1) {
+        const occurrence = {
+            start: index,
+            end: index + termLength
+        };
+        occurrences.push(occurrence);
+        // Update the offset to search for the next occurrence.
+        offset = index + 1;
     }
-
-    occurrences.push([currentOccurrenceStart, currentOccurrenceEnd]);
-    occurrences.shift(); // Remove the initial placeholder.
 
     return occurrences;
 }
 
 
 /**
- * Combines words into one array element if they are in one occurrence.
- * @param {Array<[number, string]>} words - Array of pairs [starting index, word].
- * @param {Array<[number, number]>} occurrences - Array of pairs [start, end].
- * @returns {Array<[boolean, number, string]>} - Array of combined words with starting indices.
+ * Splits the text into words and returns an array of word strings and an array of word starting indexes.
+ * @param {string} text The original text.
+ * @return {Array} A pair of arrays [array of string words, array of word starting indexes].
  */
-function combineWordsInOccurrences(words, occurrences) {
-    const result = [];
-    let currentOccurrenceIndex = 0;
-    let [currentOccurrenceStart, currentOccurrenceEnd] = occurrences.length > 0 ? occurrences[0] : [-1, -1];
-    let currentOccurrenceWords = [];
-    let resultIndexCounter = 0;
-
-    // Iterate over all words.
-    for (let wordIndex = 0; wordIndex < words.length; wordIndex++) {
-        const [wordStart, word] = words[wordIndex];
-        const wordEnd = wordStart + word.length;
-
-        // No current occurrence, word added to result normally.
-        if (currentOccurrenceEnd === -1) {
-            result.push([false, resultIndexCounter++, word]);
-            continue;
-        }
-
-        // Current word is before the current occurrence, word added to result normally.
-        if (wordEnd < currentOccurrenceStart) {
-            result.push([false, resultIndexCounter++, word]);
-            continue;
-        }
-
-        // Current word is inside the current occurrence, word added to the combined word.
-        if (wordEnd >= currentOccurrenceStart && wordStart <= currentOccurrenceEnd) {
-            currentOccurrenceWords.push(word);
-            continue;
-        }
-
-        // Current word is after the current occurrence, the current occurance is completed, retry word.
-        if (wordStart > currentOccurrenceEnd) {
-            // Combine the words with occurance into one and add to result.
-            result.push([true, resultIndexCounter++, currentOccurrenceWords.join(' ')]);
-            currentOccurrenceWords = [];
-
-            // Move to the next occurrence.
-            currentOccurrenceIndex++;
-            if (currentOccurrenceIndex < occurrences.length) {
-                [currentOccurrenceStart, currentOccurrenceEnd] = occurrences[currentOccurrenceIndex];
-            } else {
-                [currentOccurrenceStart, currentOccurrenceEnd] = [-1, -1];
-            }
-
-            // Recheck the same word with the new current occurrence.
-            wordIndex--;
-        }
-    }
-
-    // Add the last occurrence words if any.
-    if (currentOccurrenceWords.length > 0) {
-        result.push([true, resultIndexCounter++, currentOccurrenceWords.join(' ')]);
-    }
-
-    return result;
-}
-
-
-/**
- * Splits the text into words and returns pairs of [starting index, word].
- * @param {string} text - The original text.
- * @returns {Array<[number, string]>} - Array of pairs [starting index, word].
- */
-function splitTextWithIndices(text) {
+function splitTextIntoWords(text) {
     const words = [];
+    const wordIndexes = [];
+
     const regex = /\S+/g; // Matches any non-whitespace sequence.
 
     let match;
     while ((match = regex.exec(text)) !== null) {
-        words.push([match.index, match[0]]);
+        words.push(match[0]); // Gather the word string.
+        wordIndexes.push(match.index); // Gather the word starting index.
     }
 
-    return words;
+    return [words, wordIndexes];
 }
 
 
 /**
- * Transforms occurrences into pairs of start/end information.
- * @param {number[]} positions - Array of start positions.
- * @param {number} length - Length of each term.
- * @returns {number[][]} Array of pairs [start, end].
+ * Returns an array of positional data for each occurrence, including starting word number and ending word number.
+ * @param {Array} occurrences Array of search term occurrence objects, each with 'start' and 'end' properties.
+ * @param {Array} wordIndexes Array of word indexes that indicate the start position of each word in the text.
+ * @param {number} contextLength The number of words to include as context on each side of the search term occurrence.
+ * @return {Array} An array of occurrence position objects, each with 'start' (first word number of context)
+ * and 'end' (last word number of context or null if at end of text) properties.
  */
-function expandOccuranceData(positions, length) {
-    if (positions.length === 0) {
-        return [];
+function getEachOccurrenceContextPosition(occurrences, wordIndexes, contextLength) {
+    const results = [];
+    let currentOccurrenceIndex = 0;
+
+    // Iterate through each word index
+    for (let wordNumber = 0; wordNumber < wordIndexes.length; wordNumber++) {
+        // If there are no more occurrences to check, exit the loop
+        if (currentOccurrenceIndex >= occurrences.length) {
+            break;
+        }
+
+        // Check if this is the last word
+        if (wordNumber + 1 >= wordIndexes.length) {
+            const start = Math.max(0, wordNumber - contextLength);
+            const length = null;
+            results.push({ start: start, end: length });
+            continue;
+        }
+
+        // The current occurrence to check against
+        const currentOccurrence = occurrences[currentOccurrenceIndex];
+
+        // If this word is not (yet) part of the context
+        if (wordIndexes[wordNumber + 1] <= currentOccurrence.start) {
+            continue;
+        }
+
+        // This word begins an occurrence
+        const start = Math.max(0, wordNumber - contextLength);
+        const end = getContextEnd(wordIndexes, wordNumber, currentOccurrence.end, contextLength);
+
+        const position = {
+            start: start,
+            end: end
+        };
+
+        results.push(position);
+
+        currentOccurrenceIndex++;
     }
 
-    const result = [];
-    let currentStart = positions[0];
-    let currentEnd = currentStart + length;
+    return results;
+}
 
-    // In this for loop, positions[i] describes the next occurance.
-    for (let i = 1; i < positions.length; i++) {
-        if (currentEnd >= positions[i]) {
-            // If currentEnd overlaps with the next start position, merge them.
-            currentEnd = positions[i] + length;
-        } else {
-            // If no overlap, push the current start/end pair to the result.
-            result.push([currentStart, currentEnd]);
-            // Update currentStart and currentEnd to the new positions.
-            currentStart = positions[i];
-            currentEnd = currentStart + length;
+
+
+/**
+ * Returns the number of the last word still in the context. Returns null if the context is the rest of all words.
+ * @param {Array} wordIndexes An array that has the text starting index for each word.
+ * @param {number} startNumber The word number where the occurrence starts.
+ * @param {number} endIndex The text index where the occurrence ends.
+ * @param {number} contextLength The amount of words that get returned on each side of the occurrence as context.
+ * @return {?number} The word number of the last word in the context or null if it ends with the text.
+ */
+function getContextEnd(wordIndexes, startNumber, endIndex, contextLength) {
+    for (let i = startNumber; i < wordIndexes.length; i++) {
+        // Check if the context reaches the last word
+        if (i + contextLength + 1 >= wordIndexes.length) {
+            return null;
+        }
+
+        // Check if the occurrence is part of the next word
+        if (wordIndexes[i + 1] <= endIndex) {
+            continue;
+        }
+
+        // Calculate the last word number in context
+        const lastWordInContext = i + contextLength;
+
+        return lastWordInContext;
+    }
+    return null;
+}
+
+
+/**
+ * Returns an array of positional data for each occurrence set, including starting word number, ending word number, and word count.
+ * @param {Array} occurrences Array of search term occurrence objects, each with 'start' and 'end' properties.
+ * @param {Array} wordIndexes Array of word indexes that indicate the start position of each word in the text.
+ * @param {number} contextLength The number of words to include as context on each side of the search term occurrence.
+ * @return {Array} An array of occurrence position objects, each with 'start' (first word number of context)
+ * and 'end' (first word number outside the context or undefined if at end of text).
+ */
+function getContextPositions(occurrences, wordIndexes, contextLength) {
+    let occurrenceContextPositions = getEachOccurrenceContextPosition(occurrences, wordIndexes, contextLength);
+    occurrenceContextPositions = mergeOccurrenceContextPositions(occurrenceContextPositions);
+    return occurrenceContextPositions;
+}
+
+
+/**
+ * Merge overlapping occurrence positions together.
+ * @param {Array} contextPositions Array of position objects with 'start' (first word in context)
+ * and 'end' (last word in context or null if at end of text) properties.
+ * @return {Array} An array of occurrence position objects, each with 'start' (first word number of context)
+ * and 'end' (first word number outside the context or undefined if at end of text).
+ */
+function mergeOccurrenceContextPositions(contextPositions) {
+    const results = [];
+
+    for (let i = 0; i < contextPositions.length; i++) {
+        // First position.
+        let position = contextPositions[i];
+        let start = position.start;
+        let end = position.end;
+
+        // Further positions.
+        while (
+            i + 1 < contextPositions.length && // Check if there is a next position.
+            contextPositions[i].end && // Check if 'end' is null. We can then ignore all upcoming positions.
+            contextPositions[i].end >= contextPositions[i + 1].start // Check if this and the next positions overlap.
+        ) {
+            end = contextPositions[i + 1].end; // The positions overlap so the end gets set to ht next positions end.
+            i++;
+        }
+
+        const mergedPosition = {
+            start: start,
+            end: end !== null ? end + 1 : undefined // If end is not null we set end to the next element.
+        };
+
+        results.push(mergedPosition);
+
+        if (!end) { // We can ignore all later positions as we already are at the end of possible context.
+            break;
         }
     }
 
-    // Push the last start/end pair to the result.
-    result.push([currentStart, currentEnd]);
-
-    return result;
+    return results;
 }
 
 
 /**
- * This Function returns a list of starting indexes for all occurances of the given term in the given content.
- * @param {string} content The text content to search in.
- * @param {string} term The search term to search for.
- * @returns Array of start indexes of the term occurances in the content.
+ * Based on given context positions, return a combined string from a list of words.
+ * @param {Array} words List of all words.
+ * @param {Array} contextPositions An array of occurrence position objects, each with 'start' (first word number of context),
+ * and 'end' (first word number outside the context or undefinded if at end of text)
+ * @return {string} A combined string of all given positions.
  */
-function getTermOccurances(content, term) {
-    const occurances = [];
-    let startIndex = 0;
-    while ((startIndex = content.indexOf(term, startIndex)) !== -1) {
-        occurances.push(startIndex);
-        startIndex += 1;
-    }
-    return occurances;
+function getContext(words, contextPositions) {
+    let context = "... ";
+
+    contextPositions.forEach(position => {
+        const subcontextWords = words.slice(position.start, position.end);
+        context += subcontextWords.join(" ");
+        context += " ... ";
+    });
+
+    return context;
 }

@@ -63,7 +63,7 @@ class search_book_content extends external_api {
                     PARAM_INT,
                     'Number of words surrounding the found query word in each direction',
                     VALUE_DEFAULT,
-                    1
+                    0
                 ),
             ]
         );
@@ -127,7 +127,7 @@ class search_book_content extends external_api {
         list($content, $misconfiguredcontentinfo) = data::get_course_content($course->id);
 
         // Get Search Results & Context for PDFs.
-        $data = search::get_search_results($content, $searchstring, max(1, $contextlength));
+        $data = search::get_search_results($content, $searchstring, $contextlength);
 
         // Format results.
         $results = [];
