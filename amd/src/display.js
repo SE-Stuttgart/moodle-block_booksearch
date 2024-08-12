@@ -20,7 +20,9 @@
  * @copyright  2024 University of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-import { render } from 'core/templates';
+import {
+    render
+} from 'core/templates';
 
 /**
  * Processes and Displays the search results inside the given element.
@@ -32,6 +34,7 @@ export function displayResults(element, searchResults, chapterLabel) {
     const data = preprocessSearchResults(searchResults, chapterLabel);
     render('block_booksearch/display', data).then((html) => {
         element.innerHTML = html;
+        return undefined;
     }).catch(ex => {
         window.console.error('Template rendering failed: ', ex);
     });
@@ -73,5 +76,7 @@ function preprocessSearchResults(searchResults, chapterLabel) {
 
     }
 
-    return { data: data };
+    return {
+        data: data
+    };
 }

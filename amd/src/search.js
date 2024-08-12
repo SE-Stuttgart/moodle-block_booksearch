@@ -20,7 +20,9 @@
  * @copyright  2024 University of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-import { displayResults } from 'block_booksearch/display';
+import {
+    displayResults
+} from 'block_booksearch/display';
 
 /**
  * String label 'Chapter' in the current language.
