@@ -16,10 +16,13 @@
 /**
  * Block core and UI
  *
- * @module     block_booksearch/search_and_display
+ * @module     block_booksearch/search
  * @copyright  2024 University of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
+import {
+    displayResults
+} from 'block_booksearch/display';
 
 /**
  * String label 'Chapter' in the current language.
@@ -56,39 +59,7 @@ function handleSearchInputChange(event) {
     document.getElementById("bs-search-term").innerHTML = searchTermLabel + searchTerm;
 
     // Update the inner HTML of the element with ID 'bs-content' to display the results.
-    document.getElementById("bs-content").innerHTML = getResultsUI(searchResults);
-}
-
-
-/**
- * Generates an HTML string to display search results for PDFs and their chapters.
- * @param {Object} searchResults - An object where keys are PDF names and values are objects of chapters.
- * @returns {string} An HTML string with headings for each PDF name and an unordered list of chapters, each with link and context.
- */
-function getResultsUI(searchResults) {
-    // Initialize an empty string to build the HTML display
-    let display = '';
-
-    // Iterate over each PDF name in the search results
-    for (var pdfName in searchResults) {
-        // Add the PDF name as a heading
-        display += '<h4>' + pdfName + '</h4>';
-        // Start an unordered list for the chapters
-        display += '<ul class="bs-content-element">';
-        // Iterate over each chapter in the current PDF
-        for (var chapter in searchResults[pdfName]) {
-            // Add each chapter as a list item with a link and context
-            display += '<li>' +
-                '<a href="' + searchResults[pdfName][chapter].bookurl + '">' +
-                chapterLabel + '-' + chapter +
-                '</a>: ' + searchResults[pdfName][chapter].context +
-                '</li>';
-        }
-        // Close the unordered list
-        display += '</ul>';
-    }
-
-    return display;
+    displayResults(document.getElementById("bs-content"), searchResults, chapterLabel);
 }
 
 
@@ -124,9 +95,7 @@ function getSearchResults(courseContent, searchTerm, contextLength) {
         // Set chapter entry as section or add section context to existing chapter entry.
         if (!results[section.filename].hasOwnProperty(section.page)) {
             results[section.filename][section.page] = {
-                filename: section.filename,
-                url: section.url,
-                bookUrl: section.bookUrl,
+                bookurl: section.bookurl,
                 context: section.context
             };
         } else {

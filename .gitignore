@@ -1,4 +1,5 @@
 .DS_Store
 .git/
-/amd/Makefile
+/amd/HowToGrunt.md
 /lang/de
+Changelog.md
