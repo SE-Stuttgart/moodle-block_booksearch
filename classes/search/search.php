@@ -202,12 +202,12 @@ class search {
             // The current occurence to check against.
             $currentoccurence = $occurrences[$currentoccurrenceindex];
 
-            // This word is not (yet) important for the context
+            // This word is not (yet) important for the context.
             if ($wordindexes[$wordnumber + 1] <= $currentoccurence->start) {
                 continue;
             }
 
-            // This word begins an occurence
+            // This word begins an occurence.
             $start = max(0, $wordnumber - $contextlength);
             $end = self::get_context_end($wordindexes, $wordnumber, $currentoccurence->end, $contextlength);
 
@@ -260,22 +260,22 @@ class search {
      * @return array An array of occurrence position objects, each with 'start' (first word number of context)
      * and 'length' (number of words part of this occurence context, or null if at end of text) properties.
      */
-    private static function merge_occurence_context_positions($contextposition) {
+    private static function merge_occurence_context_positions($contextpositions) {
         $results = [];
 
-        for ($i = 0; $i < count($contextposition); $i++) {
+        for ($i = 0; $i < count($contextpositions); $i++) {
             // The first position.
-            $position = $contextposition[$i];
+            $position = $contextpositions[$i];
             $start = $position->start;
             $end = $position->end;
 
             // Other positions.
             while (
-                $i + 1 < count($contextposition) && // Check if there is a next position.
-                $contextposition[$i]->end && // Check if 'end' is null. We can then ignore all upcoming positions.
-                $contextposition[$i]->end >= $contextposition[$i + 1]->start // Check if this and the next positions overlap.
+                $i + 1 < count($contextpositions) && // Check if there is a next position.
+                $contextpositions[$i]->end && // Check if 'end' is null. We can then ignore all upcoming positions.
+                $contextpositions[$i]->end >= $contextpositions[$i + 1]->start // Check if this and the next positions overlap.
             ) {
-                $end = $contextposition[$i + 1]->end; // The positions overlap so the end gets set to ht next positions end.
+                $end = $contextpositions[$i + 1]->end; // The positions overlap so the end gets set to ht next positions end.
                 $i++;
             }
 

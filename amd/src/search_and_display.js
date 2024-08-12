@@ -244,7 +244,10 @@ function getEachOccurrenceContextPosition(occurrences, wordIndexes, contextLengt
         if (wordNumber + 1 >= wordIndexes.length) {
             const start = Math.max(0, wordNumber - contextLength);
             const length = null;
-            results.push({ start: start, end: length });
+            results.push({
+                start: start,
+                end: length
+            });
             continue;
         }
 
@@ -272,7 +275,6 @@ function getEachOccurrenceContextPosition(occurrences, wordIndexes, contextLengt
 
     return results;
 }
-
 
 
 /**
