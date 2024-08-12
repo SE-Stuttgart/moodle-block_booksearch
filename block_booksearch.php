@@ -162,7 +162,7 @@ class block_booksearch extends block_base {
         }
 
         // Display the search input and results.
-        $text .= $OUTPUT->render_from_template('block_booksearch/search_and_display', [
+        $text .= $OUTPUT->render_from_template('block_booksearch/search', [
             'search_term_placeholder' => get_string('search', get_class($this)),
             'search_term_label' => get_string('search_term', get_class($this)),
             'chapter_label' => get_string('chapter', get_class($this)),

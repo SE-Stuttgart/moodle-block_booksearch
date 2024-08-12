@@ -1,0 +1,78 @@
+{{!
+    This file is part of Moodle - http://moodle.org/
+
+    Moodle is free software: you can redistribute it and/or modify
+    it under the terms of the GNU General Public License as published by
+    the Free Software Foundation, either version 3 of the License, or
+    (at your option) any later version.
+
+    Moodle is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU General Public License for more details.
+
+    You should have received a copy of the GNU General Public License
+    along with Moodle.  If not, see <http://www.gnu.org/licenses/>.
+    
+    Template to display search input bar and it's search results.
+    @package    block_booksearch
+    @copyright  2024 University of Stuttgart <kasra.habib@iste.uni-stuttgart.de>
+    @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
+}}
+{{!
+    @template block_booksearch/display
+
+    Display Search Results
+
+    Example context (json):
+    {
+        "data": [
+            {
+                "filename": "filename1",
+                "chapters": [
+                    {
+                        "chapter": "1",
+                        "bookurl": "https://localhost/1/1/1",
+                        "context": "text",
+                        "chapterLabel": "Chapter"
+                    },
+                    {
+                        "chapter": "2",
+                        "bookurl": "https://localhost/1/1/2",
+                        "context": "Hello World",
+                        "chapterLabel": "Chapter"
+                    }
+                ]
+            },
+            {
+                "filename": "filename2",
+                "chapters": [
+                    {
+                        "chapter": "1",
+                        "bookurl": "https://localhost/1/2/1",
+                        "context": "text two",
+                        "chapterLabel": "Chapter"
+                    },
+                    {
+                        "chapter": "2",
+                        "bookurl": "https://localhost/1/2/2",
+                        "context": "Hello World two",
+                        "chapterLabel": "Chapter"
+                    }
+                ]
+            }
+        ]
+    }
+}}
+{{#data}}
+    <h4>{{filename}}</h4>
+    <ul class="bs-content-element">
+        {{#chapters}}
+        <li>
+            <a href="{{bookurl}}">
+                {{chapterLabel}}-{{chapter}}
+            </a>: {{context}}
+        </li>
+        {{/chapters}}
+    </ul>
+{{/data}}

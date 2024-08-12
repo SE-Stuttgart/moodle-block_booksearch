@@ -20,7 +20,7 @@
     @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
 }}
 {{!
-    @template block_booksearch/search_and_display
+    @template block_booksearch/search
 
     Complex Lecture Search
 
@@ -58,6 +58,6 @@
     </div>
 
     {{#js}}
-    require(['block_booksearch/search_and_display'], (module) => module.init("{{ chapter_label }}"));
+    require(['block_booksearch/search'], (module) => module.init("{{ chapter_label }}"));
     {{/js}}
 </div>
