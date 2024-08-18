@@ -33,6 +33,7 @@ use external_value;
 use block_booksearch\data\data;
 use block_booksearch\search\search;
 use context_course;
+use invalid_parameter_exception;
 use stdClass;
 
 /**
@@ -51,17 +52,17 @@ class search_book_content extends external_api {
             [
                 'courseid' => new external_value(
                     PARAM_INT,
-                    'Id of the course the user wants to access',
+                    get_string('parameter_course_id', 'block_booksearch'),
                     VALUE_REQUIRED
                 ),
                 'searchstring' => new external_value(
                     PARAM_TEXT,
-                    'String to search for in the course',
+                    get_string('parameter_search_string', 'block_booksearch'),
                     VALUE_REQUIRED
                 ),
                 'contextlength' => new external_value(
                     PARAM_INT,
-                    'Number of words surrounding the found query word in each direction',
+                    get_string('parameter_context_length', 'block_booksearch'),
                     VALUE_DEFAULT,
                     0
                 ),
@@ -76,10 +77,10 @@ class search_book_content extends external_api {
     public static function execute_returns() {
         return new external_multiple_structure(
             new external_single_structure([
-                'filename' => new external_value(PARAM_TEXT, 'name of the pdf file that has a matching book.'),
-                'pagenumber' => new external_value(PARAM_INT, 'page number this searched occurance happens in filename book.'),
-                'bookchapterurl' => new external_value(PARAM_RAW, 'url to pagenumber book chapter.'),
-                'contextsnippet' => new external_value(PARAM_RAW, 'text snippet around the occurance.'),
+                'filename' => new external_value(PARAM_TEXT, get_string('parameter_file_name', 'block_booksearch')),
+                'pagenumber' => new external_value(PARAM_INT, get_string('parameter_page_number', 'block_booksearch')),
+                'bookchapterurl' => new external_value(PARAM_RAW, get_string('parameter_book_chapter_url', 'block_booksearch')),
+                'contextsnippet' => new external_value(PARAM_RAW, get_string('parameter_context_snippet', 'block_booksearch')),
             ])
         );
     }
@@ -113,10 +114,15 @@ class search_book_content extends external_api {
         $searchstring = $params['searchstring'];
         $contextlength = $params['contextlength'];
 
+        // Check for valid context length.
+        if ($contextlength < 0) {
+            throw new invalid_parameter_exception(get_string('invalid_context_length', 'block_booksearch'));
+        }
+
         // Check permissions.
         list($isvalid, $course, $error) = block_booksearch_validate_course_access($courseid, $USER->id);
         if (!$isvalid) {
-            return '';
+            throw new invalid_parameter_exception(get_string('invalid_course', 'block_booksearch'));
         }
 
         $coursecontext = context_course::instance($course->id);
