@@ -35,7 +35,7 @@ $capabilities = [
 
     'block/booksearch:addinstance' => [
         'captype' => 'write',
-        'contextlevel' => CONTEXT_BLOCK,
+        'contextlevel' => CONTEXT_COURSE,
         'archetypes' => [
             'user'          => CAP_PREVENT,
         ],
