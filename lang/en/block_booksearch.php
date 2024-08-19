@@ -50,3 +50,19 @@ $string['error_user_not_found'] = 'User does not exist.';
 $string['error_course_not_found'] = 'Course not found.';
 $string['error_course_access_denied'] = 'Access to course denied.';
 $string['error_book_pdf_mismatch'] = 'There exists an mismatch of book and pdf.';
+
+// External Parameter Description.
+$string['parameter_course_id'] = 'Id of the course the user wants to access.';
+$string['parameter_search_string'] = 'String to search for in the course.';
+$string['parameter_context_length'] = "A positive integer indicating the number of words on each side of the search result
+ that get returned as additional context.";
+
+// External Parameter Error.
+$string['invalid_context_length'] = 'The parameter contextlength needs to be a positive integer.';
+$string['invalid_course'] = 'The parameter courseid needs to be a valid course id, you have access to.';
+
+// External Return Parameter Description.
+$string['parameter_file_name'] = 'Name of the PDF file that has a matching book.';
+$string['parameter_page_number'] = 'Page number where this searched occurrence happens in the filename book.';
+$string['parameter_book_chapter_url'] = 'URL to the book chapter with the page number.';
+$string['parameter_context_snippet'] = 'Text snippet around the occurrence.';
