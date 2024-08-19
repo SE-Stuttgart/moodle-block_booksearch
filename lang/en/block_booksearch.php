@@ -49,7 +49,8 @@ $string['error_message'] = 'There was a problem. Please contact the Plugin creat
 $string['error_user_not_found'] = 'User does not exist.';
 $string['error_course_not_found'] = 'Course not found.';
 $string['error_course_access_denied'] = 'Access to course denied.';
-$string['error_book_pdf_mismatch'] = 'There exists an mismatch of book and pdf.';
+$string['error_book_pdf_mismatch'] = 'There is a mismatch between the book and the PDF.';
+$string['error_module_database'] = 'This course module could not be found in the database.';
 
 // External Parameter Description.
 $string['parameter_course_id'] = 'Id of the course the user wants to access.';
