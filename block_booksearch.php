@@ -193,7 +193,6 @@ class block_booksearch extends block_base {
     /**
      * This function adds the ui elements regarding the course selection to the given strings and returns them.
      * @param string $text This string has the main Block content UI.
-     * @param string $footer This string has the Blocks footer UI.
      */
     private function add_course_selection_ui(string &$text) {
         global $OUTPUT;
