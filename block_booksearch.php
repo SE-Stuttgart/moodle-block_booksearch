@@ -48,7 +48,7 @@ class block_booksearch extends block_base {
      * Allow multiple instances of this block
      * @return bool Returns false
      */
-    function instance_allow_multiple() {
+    public function instance_allow_multiple() {
         return false;
     }
 
@@ -58,13 +58,13 @@ class block_booksearch extends block_base {
      * @return array Context level where this block can be placed
      */
     public function applicable_formats() {
-        return array(
+        return [
             'admin' => false,
             'site-index' => false,
             'course-view' => true,
             'mod' => true,
-            'my' => true
-        );
+            'my' => true,
+        ];
     }
 
 
@@ -72,8 +72,6 @@ class block_booksearch extends block_base {
      * Describe Block Content.
      */
     public function get_content() {
-        global $PAGE;
-
         if ($this->content !== null) {
             return $this->content;
         }
@@ -85,7 +83,7 @@ class block_booksearch extends block_base {
         $text = '';
         $footer = '';
 
-        switch ($PAGE->context->contextlevel) {
+        switch ($this->page->context->contextlevel) {
             case CONTEXT_USER:
                 self::handle_user_context($text, $footer);
                 break;
@@ -142,14 +140,12 @@ class block_booksearch extends block_base {
 
     /**
      * Behavior of this block when on the main course view (course context).
-     * @param string &$text This is the main block ui.
-     * @param string &$footer This is the footer of the Block ui.
+     * @param string $text This is the main block ui.
+     * @param string $footer This is the footer of the Block ui.
      */
     private function handle_course_context(&$text, &$footer) {
-        global $PAGE;
-
         // Get the course id.
-        $courseid = $PAGE->context->instanceid;
+        $courseid = $this->page->context->instanceid;
 
         // Add the search field and results to the final ui.
         self::add_search_and_results_ui($text, $footer, $courseid);
@@ -158,17 +154,17 @@ class block_booksearch extends block_base {
 
     /**
      * Behavior of this block when viewing a course module (module context).
-     * @param string &$text This is the main block ui.
-     * @param string &$footer This is the footer of the Block ui.
+     * @param string $text This is the main block ui.
+     * @param string $footer This is the footer of the Block ui.
      */
     private function handle_module_context(&$text, &$footer) {
-        global $PAGE, $DB;
+        global $DB;
 
         // Get the module id.
-        $moduleid = $PAGE->context->instanceid;
+        $moduleid = $this->page->context->instanceid;
 
         // Fetch the course module record from the database.
-        $cm = $DB->get_record('course_modules', array('id' => $moduleid), 'course');
+        $cm = $DB->get_record('course_modules', ['id' => $moduleid], 'course');
 
         // The course module for this module id could not be found, so we display an error message.
         if (!$cm) {
@@ -196,8 +192,8 @@ class block_booksearch extends block_base {
 
     /**
      * This function adds the ui elements regarding the course selection to the given strings and returns them.
-     * @param string &$text This string has the main Block content UI.
-     * @param string &$footer This string has the Blocks footer UI.
+     * @param string $text This string has the main Block content UI.
+     * @param string $footer This string has the Blocks footer UI.
      */
     private function add_course_selection_ui(string &$text) {
         global $OUTPUT;
@@ -213,8 +209,8 @@ class block_booksearch extends block_base {
 
     /**
      * This function adds the ui elements regarding the book search input and results to the given strings and returns them.
-     * @param string &$text This string has the main Block content UI.
-     * @param string &$footer This string has the Blocks footer UI.
+     * @param string $text This string has the main Block content UI.
+     * @param string $footer This string has the Blocks footer UI.
      * @param int $courseid This is the id of the course we want to search in.
      */
     private function add_search_and_results_ui(string &$text, string &$footer, int $courseid) {
