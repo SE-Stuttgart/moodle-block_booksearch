@@ -94,7 +94,7 @@ class search_book_content extends external_api {
      * array of objects each describing one search term occurance with text snippet and location data.
      */
     public static function execute($courseid, $searchstring, $contextlength) {
-        global $CFG, $DB;
+        global $USER;
         require_once(__DIR__ . '/../../locallib.php');
 
         // Validate parameter.
@@ -106,9 +106,6 @@ class search_book_content extends external_api {
                 'contextlength'        => $contextlength,
             ]
         );
-
-        // If an exception is thrown in the below code, all DB queries in this code will be rollback.
-        $transaction = $DB->start_delegated_transaction();
 
         $courseid = $params['courseid'];
         $searchstring = $params['searchstring'];
