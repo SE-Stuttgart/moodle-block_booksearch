@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-use block_booksearch\data\data;
+use block_booksearch\local\data;
 
 defined('MOODLE_INTERNAL') || die();
 

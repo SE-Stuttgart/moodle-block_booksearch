@@ -30,8 +30,8 @@ use external_multiple_structure;
 use external_single_structure;
 use external_value;
 
-use block_booksearch\data\data;
-use block_booksearch\search\search;
+use block_booksearch\local\data;
+use block_booksearch\local\search;
 use context_course;
 use invalid_parameter_exception;
 use stdClass;
