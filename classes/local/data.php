@@ -22,7 +22,7 @@
  * @license    http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
 
-namespace block_booksearch\data;
+namespace block_booksearch\local;
 
 use context_module;
 use moodle_url;

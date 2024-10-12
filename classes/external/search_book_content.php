@@ -30,8 +30,8 @@ use external_multiple_structure;
 use external_single_structure;
 use external_value;
 
-use block_booksearch\data\data;
-use block_booksearch\search\search;
+use block_booksearch\local\data;
+use block_booksearch\local\search;
 use context_course;
 use invalid_parameter_exception;
 use stdClass;
@@ -94,7 +94,7 @@ class search_book_content extends external_api {
      * array of objects each describing one search term occurance with text snippet and location data.
      */
     public static function execute($courseid, $searchstring, $contextlength) {
-        global $CFG, $DB;
+        global $USER;
         require_once(__DIR__ . '/../../locallib.php');
 
         // Validate parameter.
@@ -106,9 +106,6 @@ class search_book_content extends external_api {
                 'contextlength'        => $contextlength,
             ]
         );
-
-        // If an exception is thrown in the below code, all DB queries in this code will be rollback.
-        $transaction = $DB->start_delegated_transaction();
 
         $courseid = $params['courseid'];
         $searchstring = $params['searchstring'];
